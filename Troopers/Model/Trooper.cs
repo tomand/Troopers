@@ -8,7 +8,14 @@ namespace Troopers.Model
 {
     class Trooper
     {
-        public Vector2 Position { get; set; }
+        private Vector2 _position;
+
+        public Vector2 Position
+        {
+            get { return _position; }
+            set { _position = value; }
+        } 
+        //public Vector2 Position { get; set; }
 
         public float Width { get; set; }
         public float Height { get; set; }
@@ -20,9 +27,25 @@ namespace Troopers.Model
             Position = startPosition;
             Width = width;
             Height = height;
-            FaceDirection = faceDirection; 
+            FaceDirection = 0f; 
         }
 
+        public void Update(GameTime gameTime)
+        { 
+            FaceDirection += 0.01f;
+            //if (_position.X >= 50f)
+            //{
+            //    _position.X = 1f;
+            //}
+            //if (_position.Y >= 50f || _position.Y == 1f)
+            //{
+            //    _position.Y = 1f;
+            //}
+
+            //_position.Y += 0.1f;
+            //if (_position.X != 1.0f)
+            //_position.X += 0.1f;
+        }
 
         
     }

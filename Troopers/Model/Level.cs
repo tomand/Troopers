@@ -38,11 +38,25 @@ namespace Troopers.Model
             this._width = width;
             this._height = height;
             _troopers = new List<Trooper>();
-            _troopers.Add(new Trooper(new Vector2(5f, 95f),45f, 2f, 1f));
+            for (int i = 1; i < 51; i += 1 )
+            {
+          
+                _troopers.Add(new Trooper(new Vector2(50f, (float)i), 45f, 1f, 1f));
+            }
 
+            for (int i = 1; i < 51; i += 1)
+            {
+                _troopers.Add(new Trooper(new Vector2((float)i, 1f), 45f, 1f, 1f));
+
+            }
         }
 
 
-    
+
+
+        internal IEnumerable<Trooper> GetTroopers()
+        {
+            return _troopers;
+        }
     }
 }

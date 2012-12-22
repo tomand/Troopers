@@ -19,8 +19,8 @@ namespace Troopers.Controller
         private List<Level> _levels;
         private Camera _levelCamera;
         private LevelView _levelView;
-        private int _numberOfXTiles = 120;
-        private int _numberOfYTiles = 120;
+        private int _numberOfXTiles = 50;
+        private int _numberOfYTiles = 50;
 
         public LevelController(int viewportWidth, int viewportHeight, GraphicsDevice GraphicsDevice, ContentManager Content)
         {
@@ -30,7 +30,7 @@ namespace Troopers.Controller
             this._content = Content;
             _levels = new List<Level>();
             _levels.Add(new Level(_numberOfXTiles, _numberOfYTiles, new Vector2(0, 0)));
-            _levelCamera = new Camera(viewportHeight, viewportWidth, 50, 10, 5, 5, _numberOfXTiles, _numberOfYTiles);
+            _levelCamera = new Camera(viewportHeight, viewportWidth, 50, 10, 10, 10, _numberOfXTiles, _numberOfYTiles);
             _levelView = new LevelView(_graphicsDevice, _content, _levels, _levelCamera);
         }
 
@@ -41,7 +41,10 @@ namespace Troopers.Controller
 
         internal void Update(GameTime gameTime)
         {
-            
+            foreach (Trooper t in _levels.First<Level>().GetTroopers())
+            {
+                t.Update(gameTime);
+            }
         }
 
         public void Draw(SpriteBatch spriteBatch, GameTime gameTime)
