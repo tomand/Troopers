@@ -22,8 +22,8 @@ namespace Troopers.View
         public Camera(int viewPortHeight, int viewPortWidth, int xOffset, int yOffset, int xTileSize, int yTileSize, int numberOfXTiles, int numberOfYTiles)
         {
             _scale = Convert.ToDouble(Math.Min(viewPortHeight, viewPortWidth)) / Convert.ToDouble(numberOfXTiles * xTileSize + xOffset * 2);
-            this._xOffset = Convert.ToInt32(xOffset * _scale);
-            this._yOffset = Convert.ToInt32(yOffset * _scale);
+            _xOffset = Convert.ToInt32(xOffset * _scale);
+            _yOffset = Convert.ToInt32(yOffset * _scale);
             _xTileSize = Convert.ToInt32(xTileSize * _scale);
             _yTileSize = Convert.ToInt32(yTileSize * _scale);
             _viewPortHeight = viewPortHeight;
@@ -102,7 +102,7 @@ namespace Troopers.View
 
         internal float Scale(float size)
         {
-            return (int)((double)size * _scale);
+            return (float)(size * _scale);
         }
 
         internal int TransformSizeX(float x)

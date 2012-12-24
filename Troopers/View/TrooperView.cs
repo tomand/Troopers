@@ -20,13 +20,13 @@ namespace Troopers.View
 
         internal void Draw(SpriteBatch spriteBatch, GameTime gameTime, Trooper trooper)
         {
-            destinationRectangle = new Rectangle(_camera.TransformX(trooper.Position.X - trooper.Width),
-                    _camera.TransformY(trooper.Position.Y - trooper.Height)
-                    , _camera.TransformSizeX(trooper.Width)
-                    , _camera.TransformSizeY(trooper.Height));
+            DestinationRectangle = new Rectangle(Camera.TransformX(trooper.Position.X - trooper.Width),
+                    Camera.TransformY(trooper.Position.Y - trooper.Height)
+                    , Camera.TransformSizeX(trooper.Width)
+                    , Camera.TransformSizeY(trooper.Height));
 
         //    spriteBatch.Draw(GameObjectTexture, destinationRectangle, null, Color.White, trooper.FaceDirection, _camera.Transform(trooper.Position), SpriteEffects.None, 0);
-            spriteBatch.Draw(GameObjectTexture, destinationRectangle, Color.White);
+            spriteBatch.Draw(GameObjectTexture, DestinationRectangle, Color.White);
             
         }
 

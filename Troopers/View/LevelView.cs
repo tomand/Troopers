@@ -25,10 +25,10 @@ namespace Troopers.View
         internal void Draw(SpriteBatch spriteBatch, GameTime gameTime)
         {
             base.Draw(spriteBatch,
-                new Rectangle(_camera.TransformX(_levels.First<Level>().Position.X),
-                    _camera.TransformY(_levels.First<Level>().Position.Y)
-                    , _camera.TransformSizeX(_levels.First<Level>().Width)
-                    , _camera.TransformSizeY(_levels.First<Level>().Height)));
+                new Rectangle(Camera.TransformX(_levels.First<Level>().Position.X),
+                    Camera.TransformY(_levels.First<Level>().Position.Y)
+                    , Camera.TransformSizeX(_levels.First<Level>().Width)
+                    , Camera.TransformSizeY(_levels.First<Level>().Height)));
 
             foreach (Trooper trooper in _levels.First<Level>().GetTroopers())
             {

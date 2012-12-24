@@ -19,8 +19,8 @@ namespace Troopers.Controller
         GraphicsDeviceManager _graphics;
         SpriteBatch _spriteBatch;
 
-        private static int VIEWPORT_HEIGHT = 640;
-        private static int VIEWPORT_WIDTH = 800;
+        private const int ViewportHeight = 640;
+        private const int ViewportWidth = 800;
 
         LevelController _levelController;
 
@@ -29,10 +29,10 @@ namespace Troopers.Controller
             _graphics = new GraphicsDeviceManager(this);
             Content.RootDirectory = "Content";
             _graphics.IsFullScreen = false;
-            _graphics.PreferredBackBufferHeight = VIEWPORT_HEIGHT;
-            _graphics.PreferredBackBufferWidth = VIEWPORT_WIDTH;
+            _graphics.PreferredBackBufferHeight = ViewportHeight;
+            _graphics.PreferredBackBufferWidth = ViewportWidth;
 
-             _levelController = new LevelController(VIEWPORT_WIDTH, VIEWPORT_HEIGHT, GraphicsDevice, Content);
+             _levelController = new LevelController(ViewportWidth, ViewportHeight, GraphicsDevice, Content);
         }
 
         /// <summary>

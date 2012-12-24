@@ -35,8 +35,8 @@ namespace Troopers.Model
         public Level(int width, int height, Vector2 position)
         {
             _position = position;
-            this._width = width;
-            this._height = height;
+            _width = width;
+            _height = height;
             _troopers = new List<Trooper>();
             for (int i = 1; i < 51; i += 1 )
             {

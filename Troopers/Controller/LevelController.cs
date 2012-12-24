@@ -14,23 +14,25 @@ namespace Troopers.Controller
     {
         private int _viewportWidth;
         private int _viewportHeight;
-        private Microsoft.Xna.Framework.Graphics.GraphicsDevice _graphicsDevice;
-        private Microsoft.Xna.Framework.Content.ContentManager _content;
-        private List<Level> _levels;
+        private readonly GraphicsDevice _graphicsDevice;
+        private readonly ContentManager _content;
+        private readonly List<Level> _levels;
         private Camera _levelCamera;
-        private LevelView _levelView;
+        private readonly LevelView _levelView;
         private int _numberOfXTiles = 50;
         private int _numberOfYTiles = 50;
+        private int _xTileSize = 10;
+        private int _yTileSize = 10;
 
-        public LevelController(int viewportWidth, int viewportHeight, GraphicsDevice GraphicsDevice, ContentManager Content)
+        public LevelController(int viewportWidth, int viewportHeight, GraphicsDevice graphicsDevice, ContentManager content)
         {
             this._viewportWidth = viewportWidth;
             this._viewportHeight = viewportHeight;
-            this._graphicsDevice = GraphicsDevice;
-            this._content = Content;
+            this._graphicsDevice = graphicsDevice;
+            this._content = content;
             _levels = new List<Level>();
             _levels.Add(new Level(_numberOfXTiles, _numberOfYTiles, new Vector2(0, 0)));
-            _levelCamera = new Camera(viewportHeight, viewportWidth, 50, 10, 10, 10, _numberOfXTiles, _numberOfYTiles);
+            _levelCamera = new Camera(viewportHeight, viewportWidth, 50, 10, _xTileSize, _yTileSize, _numberOfXTiles, _numberOfYTiles);
             _levelView = new LevelView(_graphicsDevice, _content, _levels, _levelCamera);
         }
 
