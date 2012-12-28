@@ -11,12 +11,9 @@ using Troopers.View;
 
 namespace Troopers.Controller
 {
-    class LevelController
+    class LevelController : ControllerBase
     {
-        private int _viewportWidth;
-        private int _viewportHeight;
-        private readonly GraphicsDevice _graphicsDevice;
-        private readonly ContentManager _content;
+
         private readonly List<Level> _levels;
         private Camera _levelCamera;
         private readonly LevelView _levelView;
@@ -25,6 +22,7 @@ namespace Troopers.Controller
         private int _xTileSize = 20;
         private int _yTileSize = 20;
         private MouseState _oldMouseState;
+        public event EventHandler PauseGame;
 
 
         public LevelController(int viewportWidth, int viewportHeight, GraphicsDevice graphicsDevice, ContentManager content)
@@ -47,6 +45,12 @@ namespace Troopers.Controller
 
         internal void Update(GameTime gameTime)
         {
+            KeyboardState keyboardState = Keyboard.GetState();
+            if (IsKeyPressed(keyboardState, Keys.Space))
+            {
+                OnPauseGame();
+            }
+            
             MouseState newMouseState = Mouse.GetState();
             Vector2 mousePosition = new Vector2(newMouseState.X, newMouseState.Y);
             Vector2 logicalMousePosition = _levelCamera.TransformScreenToLogic(mousePosition);
@@ -54,6 +58,16 @@ namespace Troopers.Controller
             _levels.First<Level>().Update(gameTime, logicalMousePosition, LeftButtonIsClicked(newMouseState));
             
             UpdateMouseState(newMouseState);
+            _oldKeyboardState = keyboardState;
+        }
+
+        private void OnPauseGame()
+        {
+            EventHandler handler = PauseGame;
+            if (handler != null)
+            {
+                handler(this, new EventArgs());
+            }
         }
 
         private bool LeftButtonIsClicked(MouseState newMouseState)

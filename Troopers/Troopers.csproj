@@ -107,11 +107,13 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Controller\ControllerBase.cs" />
     <Compile Include="Controller\LevelController.cs" />
     <Compile Include="Controller\MainMenuController.cs" />
     <Compile Include="Model\Cursor.cs" />
     <Compile Include="Model\Level.cs" />
     <Compile Include="Model\MainMenu.cs" />
+    <Compile Include="Model\MenuItem.cs" />
     <Compile Include="Model\Player.cs" />
     <Compile Include="Model\Trooper.cs" />
     <Compile Include="Model\Weapon.cs" />
@@ -161,6 +163,9 @@
       <ProductName>Microsoft XNA Framework Redistributable 4.0</ProductName>
       <Install>true</Install>
     </BootstrapperPackage>
+  </ItemGroup>
+  <ItemGroup>
+    <WCFMetadata Include="Service References\" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <Import Project="$(MSBuildExtensionsPath)\Microsoft\XNA Game Studio\Microsoft.Xna.GameStudio.targets" />

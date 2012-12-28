@@ -23,6 +23,7 @@ namespace Troopers.Controller
         private const int ViewportWidth = 800;
 
         LevelController _levelController;
+        private MainMenuController _mainMenuController;
 
         public MasterController()
         {
@@ -33,7 +34,27 @@ namespace Troopers.Controller
             _graphics.PreferredBackBufferHeight = ViewportHeight;
             _graphics.PreferredBackBufferWidth = ViewportWidth;
 
-             _levelController = new LevelController(ViewportWidth, ViewportHeight, GraphicsDevice, Content);
+            _levelController = new LevelController(ViewportWidth, ViewportHeight, GraphicsDevice, Content);
+            _levelController.IsActive = false;
+            _mainMenuController = new MainMenuController(ViewportWidth, ViewportHeight, GraphicsDevice, Content);
+            _mainMenuController.IsActive = true;
+            _mainMenuController.StartGame += MainMenuControllerOnStartGame;
+            _mainMenuController.ExitGame += (sender, args) => { this.Exit(); };
+            _levelController.PauseGame += (sender, args) => ShowPauseMenu();
+
+        }
+
+        private void ShowPauseMenu()
+        {
+            _mainMenuController.IsActive = true;
+            _levelController.IsActive = false;
+        }
+
+
+        private void MainMenuControllerOnStartGame(object sender, EventArgs eventArgs)
+        {
+            _mainMenuController.IsActive = false;
+            _levelController.IsActive = true;
         }
 
         /// <summary>
@@ -59,6 +80,7 @@ namespace Troopers.Controller
             _spriteBatch = new SpriteBatch(GraphicsDevice);
 
             _levelController.LoadConent();
+            _mainMenuController.LoadContent();
         }
 
         /// <summary>
@@ -81,7 +103,11 @@ namespace Troopers.Controller
             if (GamePad.GetState(PlayerIndex.One).Buttons.Back == ButtonState.Pressed)
                 this.Exit();
 
-            _levelController.Update(gameTime);
+            if (_levelController.IsActive)
+                _levelController.Update(gameTime);
+
+            if (_mainMenuController.IsActive)
+                _mainMenuController.Update(gameTime);
 
             base.Update(gameTime);
         }
@@ -94,10 +120,14 @@ namespace Troopers.Controller
         {
            
 
-             GraphicsDevice.Clear(Color.Black);
+            GraphicsDevice.Clear(Color.Black);
             _spriteBatch.Begin();
-           
-            _levelController.Draw(_spriteBatch, gameTime);
+
+            if (_levelController.IsActive)
+                _levelController.Draw(_spriteBatch, gameTime);
+
+            if (_mainMenuController.IsActive)
+                _mainMenuController.Draw(_spriteBatch, gameTime);
             
             _spriteBatch.End();
             
