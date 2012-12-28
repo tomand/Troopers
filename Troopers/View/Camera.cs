@@ -19,9 +19,9 @@ namespace Troopers.View
         private int _viewPortWidth;
         private double _scale;
         
-        public Camera(int viewPortHeight, int viewPortWidth, int xOffset, int yOffset, int xTileSize, int yTileSize, int numberOfXTiles, int numberOfYTiles)
+        public Camera(int viewPortHeight, int viewPortWidth, int xOffset, int yOffset, int xTileSize, int yTileSize, int numberOfXTiles, int numberOfYTiles, double scale = 1.0)
         {
-            _scale = Convert.ToDouble(Math.Min(viewPortHeight, viewPortWidth)) / Convert.ToDouble(numberOfXTiles * xTileSize + xOffset * 2);
+            _scale = scale;
             _xOffset = Convert.ToInt32(xOffset * _scale);
             _yOffset = Convert.ToInt32(yOffset * _scale);
             _xTileSize = Convert.ToInt32(xTileSize * _scale);

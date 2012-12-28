@@ -109,6 +109,7 @@
   <ItemGroup>
     <Compile Include="Controller\LevelController.cs" />
     <Compile Include="Controller\MainMenuController.cs" />
+    <Compile Include="Model\Cursor.cs" />
     <Compile Include="Model\Level.cs" />
     <Compile Include="Model\MainMenu.cs" />
     <Compile Include="Model\Player.cs" />
@@ -118,6 +119,7 @@
     <Compile Include="Program.cs" />
     <Compile Include="Controller\MasterController.cs" />
     <Compile Include="View\Camera.cs" />
+    <Compile Include="View\CursorView.cs" />
     <Compile Include="View\GameObjectView.cs" />
     <Compile Include="View\LevelView.cs" />
     <Compile Include="View\MainMenuView.cs" />

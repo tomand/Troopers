@@ -26,6 +26,7 @@ namespace Troopers.Controller
 
         public MasterController()
         {
+            IsMouseVisible = true;
             _graphics = new GraphicsDeviceManager(this);
             Content.RootDirectory = "Content";
             _graphics.IsFullScreen = false;

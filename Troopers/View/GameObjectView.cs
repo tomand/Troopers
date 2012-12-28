@@ -1,9 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using Microsoft.Xna.Framework.Graphics;
-using Microsoft.Xna.Framework.Content;
+﻿using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework;
 
 namespace Troopers.View
@@ -21,7 +16,7 @@ namespace Troopers.View
         protected Rectangle DestinationRectangle;
         protected Camera Camera;
 
-        public GameObjectView(GraphicsDevice graphicsDevice, ContentManager content,  Camera camera)
+        public GameObjectView(Camera camera)
         {
             Camera = camera;
 
