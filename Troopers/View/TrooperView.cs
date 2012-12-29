@@ -38,7 +38,9 @@ namespace Troopers.View
             int x = DestinationRectangle.X +  Camera.TransformSizeX(trooper.Width/2);
             int y = DestinationRectangle.Y + Camera.TransformSizeY(trooper.Height / 2);
             spriteBatch.Draw(GameObjectTexture, new Rectangle(x,y, DestinationRectangle.Width, DestinationRectangle.Height), null, Color.White, trooper.FaceDirection, origin, SpriteEffects.None, 0);
-            spriteBatch.Draw(_tileMark, DestinationRectangle, Color.White);
+            Rectangle? sourceRectangle = new Rectangle(0, 0, _tileMark.Height, _tileMark.Height);
+            spriteBatch.Draw(_tileMark, DestinationRectangle, sourceRectangle, Color.White);
+          
         }
 
         internal void LoadContent(ContentManager content)

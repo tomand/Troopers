@@ -36,7 +36,14 @@ namespace Troopers.View
         private void DrawMenuItem(MenuItem menuItem, SpriteBatch spriteBatch, Vector2 menuItemPosition)
         {
             if (menuItem.IsSelected)
-                base.Draw(spriteBatch, menuItemPosition.X - 0.04f, menuItemPosition.Y + 0.01f, Camera.TransformSizeX( 0.03f), Camera.TransformSizeY( 0.03f) );
+            {
+                Rectangle? sourceRectangle = new Rectangle(0, 0, GameObjectTexture.Height, GameObjectTexture.Height);
+
+                DestinationRectangle = new Rectangle((int)Camera.TransformX(menuItemPosition.X - 0.04f), (int)Camera.TransformY(menuItemPosition.Y + 0.01f), Camera.TransformSizeX(0.03f), Camera.TransformSizeY(0.03f));
+                spriteBatch.Draw(GameObjectTexture, DestinationRectangle, sourceRectangle, Color.White);
+            }
+            
+                //base.Draw(spriteBatch, menuItemPosition.X - 0.04f, menuItemPosition.Y + 0.01f, Camera.TransformSizeX( 0.03f), Camera.TransformSizeY( 0.03f) );
 
             spriteBatch.DrawString(font, menuItem.Text, Camera.Transform(menuItemPosition), Color.White);
         }

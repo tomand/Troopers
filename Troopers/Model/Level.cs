@@ -49,6 +49,8 @@ namespace Troopers.Model
             //{
           
              _troopers.Add(new Trooper(new Vector2(1f,28f), 90f, 1f, 1f));
+
+            _troopers.First().Current = true;
             //}
 
             //for (int i = 2; i < 26; i += 2)
@@ -63,9 +65,6 @@ namespace Troopers.Model
             //}
         }
 
-
-
-
         internal IEnumerable<Trooper> GetTroopers()
         {
             return _troopers;
@@ -79,8 +78,26 @@ namespace Troopers.Model
             foreach (Trooper t in GetTroopers())
             {
                 t.Update(gameTime, _cursor.CenterPosition,_cursor.Position, startMoving);
+                if (t.HasNoTimeLeft)
+                {
+                    t.Current = false;
+                    GetNextTrooper().Current = true;
+                }
             }
-            
+
+
+            _cursor.DistanceGrade = GetActiveTrooper().GetDistanceGrade(_cursor.Position);
+        }
+
+        private Trooper GetNextTrooper()
+        {
+            return _troopers.First();
+        }
+
+
+        private Trooper GetActiveTrooper()
+        {
+            return _troopers.Find(t => t.Current);
         }
     }
 }

@@ -17,13 +17,10 @@ namespace Troopers.Model
 
 
         public Vector2 Position { get; set; }
-
         public float Side { get; set; }
-
-
         public float Width { get { return Side; } }
-
         public float Height { get { return Side ; } }
+        public Distance DistanceGrade { get; set; }
 
         public Vector2 CenterPosition
         {
@@ -33,9 +30,13 @@ namespace Troopers.Model
         internal void UpdatePosition(Vector2 mousePosition, int levelWidth, int levelHeight)
         {
             Position += 1f * (mousePosition - Position);
-
             Position = new Vector2((float)Math.Floor(MathHelper.Clamp(Position.X, 0f, levelWidth - Side)), (float)Math.Floor(MathHelper.Clamp(Position.Y, 0f, levelHeight - Side)));
-        
+            
+
+
         }
     }
+
+    public enum Distance
+    {Close, Medium, Far}
 }
