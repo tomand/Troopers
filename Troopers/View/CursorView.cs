@@ -36,6 +36,11 @@ namespace Troopers.View
 
         private int GetSourceXValue()
         {
+            if (_cursor.MarksEnemyTrooper)
+            {
+                return 81;
+            }
+
             int returnValue = 0;
             switch (_cursor.DistanceGrade)
             {

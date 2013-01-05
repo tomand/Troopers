@@ -110,6 +110,7 @@
     <Compile Include="Controller\ControllerBase.cs" />
     <Compile Include="Controller\LevelController.cs" />
     <Compile Include="Controller\MainMenuController.cs" />
+    <Compile Include="Model\ComputerControlledTrooper.cs" />
     <Compile Include="Model\Cursor.cs" />
     <Compile Include="Model\Level.cs" />
     <Compile Include="Model\MainMenu.cs" />

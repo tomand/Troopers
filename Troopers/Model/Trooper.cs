@@ -11,8 +11,9 @@ namespace Troopers.Model
         private Vector2 _position;
         Vector2 _direction;
         private int _time;
-        private int _timeToShoot;
         private bool _current;
+        protected bool _isControlledByComputer = false;
+        private Weapon _weapon;
 
         public Vector2 Position
         {
@@ -26,6 +27,8 @@ namespace Troopers.Model
         public Vector2 Velocity { get; set; }
         public float FaceDirection { get; set; }
         public Vector2 TargetPosition { get; set; }
+        public int Speed { get; set; }
+
         public bool Current
         {
             get { return _current; } 
@@ -42,7 +45,7 @@ namespace Troopers.Model
         }
 
 
-        public Trooper(Vector2 startPosition,float faceDirection ,float width, float height)
+        public Trooper(Vector2 startPosition,float faceDirection ,float width, float height, int speed)
         {
             Position = startPosition;
             TargetPosition = startPosition;
@@ -50,17 +53,30 @@ namespace Troopers.Model
             Height = height;
             FaceDirection =  faceDirection;
             _time = 9;
-            _timeToShoot = 3;
+           
+            Speed = speed;
+            _weapon = new Weapon();
         }
 
-        public void Update(GameTime gameTime, Vector2 cursorCenterPosition, Vector2 cursorPosition, bool startMoving)
+
+        public virtual void Update(GameTime gameTime)
         {
-            if (startMoving && GetDistanceSquared(cursorPosition) <= _time * _time)
+        }
+
+        public void Update(GameTime gameTime, Vector2 cursorCenterPosition, Vector2 cursorPosition, bool mouseClicked, bool enemyIsMarked)
+        {
+            if (!enemyIsMarked && mouseClicked && GetDistanceSquared(cursorPosition) <= _time * _time)
             {
                 FacePosition(cursorCenterPosition);
                 TargetPosition = cursorPosition;
                 _direction = TargetPosition - Position;
                 _time = _time - (int)Math.Ceiling( Math.Sqrt(GetDistanceSquared(cursorPosition)));
+            }
+
+            if (enemyIsMarked && mouseClicked)
+            {
+                FacePosition(cursorCenterPosition);
+                Shoot();
             }
 
             if (!TargetIsReached())
@@ -86,6 +102,13 @@ namespace Troopers.Model
             //_position.Y += 0.1f;
             //if (_position.X != 1.0f)
             //_position.X += 0.1f;
+        }
+
+        private void Shoot()
+        {
+            _time = _time - _weapon.TimeToShoot;
+            _weapon.Fire(FaceDirection, CenterPosition);
+
         }
 
         private float GetDistanceSquared(Vector2 distantPosition)
@@ -117,8 +140,13 @@ namespace Troopers.Model
 
         public bool HasNoTimeLeft
         {
-            get { return _time == 0; }
+            get { return _time == 0 && (Position == TargetPosition); }
             
+        }
+
+        public  bool IsControlledByComputer
+        {
+            get { return _isControlledByComputer; }          
         }
 
 
@@ -135,7 +163,7 @@ namespace Troopers.Model
 
             if (squaredDistance > _time * _time)
                 return Distance.Far;
-            else if (squaredDistance > (_time - _timeToShoot) * (_time  - _timeToShoot))
+            else if (squaredDistance > (_time - _weapon.TimeToShoot) * (_time - _weapon.TimeToShoot))
                 return Distance.Medium;
 
             return Distance.Close;
