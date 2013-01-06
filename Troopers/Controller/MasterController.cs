@@ -33,15 +33,24 @@ namespace Troopers.Controller
             _graphics.IsFullScreen = false;
             _graphics.PreferredBackBufferHeight = ViewportHeight;
             _graphics.PreferredBackBufferWidth = ViewportWidth;
-
             _levelController = new LevelController(ViewportWidth, ViewportHeight, GraphicsDevice, Content);
+            
             _levelController.IsActive = false;
             _mainMenuController = new MainMenuController(ViewportWidth, ViewportHeight, GraphicsDevice, Content);
             _mainMenuController.IsActive = true;
+           
             _mainMenuController.StartGame += MainMenuControllerOnStartGame;
             _mainMenuController.ExitGame += (sender, args) => { this.Exit(); };
             _levelController.PauseGame += (sender, args) => ShowPauseMenu();
+            _levelController.LevelFinished += (sender, args) => FinishLevel();
+      
 
+        }
+
+        private void FinishLevel()
+        {
+            _mainMenuController.IsActive = true;
+            _levelController.IsActive = false;
         }
 
         private void ShowPauseMenu()
@@ -55,6 +64,7 @@ namespace Troopers.Controller
         {
             _mainMenuController.IsActive = false;
             _levelController.IsActive = true;
+            _levelController.StartLevel();
         }
 
         /// <summary>

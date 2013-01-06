@@ -35,10 +35,16 @@ namespace Troopers.Model
             get { return _cursor; }
         }
 
+        public bool IsFinished
+        {
+            get { return _troopers.Count(t => t.IsControlledByComputer && t.IsAlive) == 0 || _troopers.Count(t => !t.IsControlledByComputer && t.IsAlive) == 0; }
+          
+        }
+
         List<Trooper> _troopers;
-        private readonly Cursor _cursor;
-        private Random _random;
-        private int _nextActiveTrooper;
+        private  Cursor _cursor;
+        private readonly Random _random;
+        private int _nextActiveTrooper = 1;
 
         public Level(int width, int height, Vector2 position)
         {
@@ -46,15 +52,7 @@ namespace Troopers.Model
             _position = position;
             _width = width;
             _height = height;
-            _cursor = new Cursor(new Vector2(0, 0),1f);
-            _troopers = new List<Trooper>();
-            //for (int i = 2; i < 26; i += 2 )
-            //{
-          
-             _troopers.Add(new Trooper(new Vector2(1f,28f), 90f, 1f, 1f, _random.Next(100,200)));
-             _troopers.Add(new ComputerControlledTrooper(new Vector2(28f, 1f), 90f, 1f, 1f, _random.Next(100, 200)));
-
-            _troopers.First().Current = true;
+            _cursor = new Cursor(new Vector2(0, 0), 1f);
             //}
 
             //for (int i = 2; i < 26; i += 2)
@@ -71,7 +69,7 @@ namespace Troopers.Model
 
         internal IEnumerable<Trooper> GetTroopers()
         {
-            return _troopers;
+            return _troopers.Where(t => t.IsAlive);
         }
 
 
@@ -83,17 +81,31 @@ namespace Troopers.Model
             _cursor.MarksEnemyTrooper = IsComputerControlledTrooperOnPosition(_cursor.Position);
             if (trooper.IsControlledByComputer)
             {
-                trooper.Update(gameTime);
+                trooper.Update(gameTime, GetPlayerControlledTroopers());
             }
             else
             {
                 trooper.Update(gameTime, _cursor.CenterPosition, _cursor.Position, mouseClicked, _cursor.MarksEnemyTrooper);
+                if (_cursor.MarksEnemyTrooper)
+                {
+                    trooper.ShootingTarget = GetTrooperOnPosition(_cursor.Position);
+                }
             }
             
             _cursor.DistanceGrade = trooper.GetDistanceGrade(_cursor.Position);
 
             if (trooper.HasNoTimeLeft) 
                 UpdateWhoIsCurrent(trooper);
+        }
+
+        private Trooper GetTrooperOnPosition(Vector2 position)
+        {
+            return _troopers.Find(t => t.Position.Equals(position));
+        }
+
+        private IEnumerable<Trooper> GetPlayerControlledTroopers()
+        {
+            return _troopers.Where(t => !t.IsControlledByComputer);
         }
 
         private bool IsComputerControlledTrooperOnPosition(Vector2 position)
@@ -122,8 +134,21 @@ namespace Troopers.Model
 
         private Trooper GetNextTrooper()
         {
-            return _troopers.OrderByDescending(t => t.Speed).ElementAt(_nextActiveTrooper);
+            _nextActiveTrooper = Math.Min(_nextActiveTrooper, _troopers.Count(t => t.IsAlive) - 1);
+            return _troopers.Where(t => t.IsAlive).OrderByDescending(t => t.Speed).ElementAt(_nextActiveTrooper);
         }
 
+        public void Start()
+        {
+            _nextActiveTrooper = 1;
+           
+            _troopers = new List<Trooper>();
+            _troopers.Add(new Trooper(new Vector2(1f, 28f), 90f, 1f, 1f, _random.Next(100, 200)));
+            _troopers.Add(new ComputerControlledTrooper(new Vector2(28f, 1f), 90f, 1f, 1f, _random.Next(100, 200)));
+                
+
+
+            _troopers.First().Current = true;
+        }
     }
 }

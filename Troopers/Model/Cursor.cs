@@ -25,7 +25,7 @@ namespace Troopers.Model
 
         public Vector2 CenterPosition
         {
-            get { return new Vector2(Position.X - Width / 2, Position.Y - Height /2); }
+            get { return new Vector2(Position.X + Width / 2, Position.Y + Height /2); }
         }
 
         

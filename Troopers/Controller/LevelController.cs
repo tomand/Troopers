@@ -14,9 +14,9 @@ namespace Troopers.Controller
     class LevelController : ControllerBase
     {
 
-        private readonly List<Level> _levels;
+        private List<Level> _levels;
         private Camera _levelCamera;
-        private readonly LevelView _levelView;
+        private LevelView _levelView;
         private int _numberOfXTiles = 30;
         private int _numberOfYTiles = 30;
         private int _xTileSize = 20;
@@ -24,6 +24,21 @@ namespace Troopers.Controller
         private MouseState _oldMouseState;
         public event EventHandler PauseGame;
 
+        protected virtual void OnPauseGame()
+        {
+            EventHandler handler = PauseGame;
+            if (handler != null) handler(this, EventArgs.Empty);
+        }
+
+        public event EventHandler LevelFinished;
+
+        protected virtual void OnLevelFinished()
+        {
+            EventHandler handler = LevelFinished;
+            if (handler != null) handler(this, EventArgs.Empty);
+        }
+
+        
 
         public LevelController(int viewportWidth, int viewportHeight, GraphicsDevice graphicsDevice, ContentManager content)
         {
@@ -31,11 +46,18 @@ namespace Troopers.Controller
             this._viewportHeight = viewportHeight;
             this._graphicsDevice = graphicsDevice;
             this._content = content;
-            _levels = new List<Level>();
-            _levels.Add(new Level(_numberOfXTiles, _numberOfYTiles, new Vector2(0, 0)));
-            _levelCamera = new Camera(viewportHeight, viewportWidth, 50, 10, _xTileSize, _yTileSize, _numberOfXTiles, _numberOfYTiles);
+            _levels = new List<Level> {new Level(_numberOfXTiles, _numberOfYTiles, new Vector2(0, 0))};
+            _levelCamera = new Camera(_viewportHeight, _viewportWidth, 50, 10, _xTileSize, _yTileSize, _numberOfXTiles, _numberOfYTiles);
             _levelView = new LevelView(_graphicsDevice, _content, _levels, _levelCamera);
             
+           
+        }
+
+        public void StartLevel()
+        {
+            _levels.First<Level>().Start();
+
+
         }
 
         internal void LoadConent()
@@ -45,6 +67,11 @@ namespace Troopers.Controller
 
         internal void Update(GameTime gameTime)
         {
+            if (_levels.First<Level>().IsFinished)
+            {
+                OnLevelFinished();
+            }
+            
             KeyboardState keyboardState = Keyboard.GetState();
             if (IsKeyPressed(keyboardState, Keys.Space))
             {
@@ -61,14 +88,7 @@ namespace Troopers.Controller
             _oldKeyboardState = keyboardState;
         }
 
-        private void OnPauseGame()
-        {
-            EventHandler handler = PauseGame;
-            if (handler != null)
-            {
-                handler(this, new EventArgs());
-            }
-        }
+       
 
         private bool LeftButtonIsClicked(MouseState newMouseState)
         {

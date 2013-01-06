@@ -6,14 +6,15 @@ using Microsoft.Xna.Framework;
 
 namespace Troopers.Model
 {
-    class Trooper
+    public class Trooper
     {
         private Vector2 _position;
         Vector2 _direction;
-        private int _time;
+        protected int _time;
         private bool _current;
         protected bool _isControlledByComputer = false;
         private Weapon _weapon;
+        private int _health;
 
         public Vector2 Position
         {
@@ -28,6 +29,8 @@ namespace Troopers.Model
         public float FaceDirection { get; set; }
         public Vector2 TargetPosition { get; set; }
         public int Speed { get; set; }
+        public Trooper ShootingTarget { get; set; }
+        public bool IsAlive { get { return _health > 0; } }
 
         public bool Current
         {
@@ -52,14 +55,14 @@ namespace Troopers.Model
             Width = width;
             Height = height;
             FaceDirection =  faceDirection;
-            _time = 9;
-           
             Speed = speed;
-            _weapon = new Weapon();
+            _health = 20;
+            Weapon = new Weapon();
+            InitiateNewTurn();
         }
 
 
-        public virtual void Update(GameTime gameTime)
+        public virtual void Update(GameTime gameTime, IEnumerable<Trooper> troopers )
         {
         }
 
@@ -73,7 +76,7 @@ namespace Troopers.Model
                 _time = _time - (int)Math.Ceiling( Math.Sqrt(GetDistanceSquared(cursorPosition)));
             }
 
-            if (enemyIsMarked && mouseClicked)
+            if (enemyIsMarked && mouseClicked && _time >= _weapon.TimeToShoot)
             {
                 FacePosition(cursorCenterPosition);
                 Shoot();
@@ -88,6 +91,7 @@ namespace Troopers.Model
                 Position = TargetPosition;
             }
 
+            Weapon.Update(gameTime);
          
             // FaceDirection += 0.01f;
             //if (_position.X >= 50f)
@@ -104,10 +108,11 @@ namespace Troopers.Model
             //_position.X += 0.1f;
         }
 
+        
         private void Shoot()
         {
-            _time = _time - _weapon.TimeToShoot;
-            _weapon.Fire(FaceDirection, CenterPosition);
+            _time = _time - Weapon.TimeToShoot;
+            Weapon.Fire(FaceDirection, CenterPosition, ShootingTarget);
 
         }
 
@@ -135,18 +140,24 @@ namespace Troopers.Model
 
         public Vector2 CenterPosition
         {
-            get { return new Vector2(Position.X - Width / 2, Position.Y - Height / 2); }
+            get { return new Vector2(Position.X + Width / 2, Position.Y + Height / 2); }
         }
 
         public bool HasNoTimeLeft
         {
-            get { return _time == 0 && (Position == TargetPosition); }
+            get { return _time == 0 && (Position == TargetPosition) && !_weapon.IsShooting; }
             
         }
 
         public  bool IsControlledByComputer
         {
             get { return _isControlledByComputer; }          
+        }
+
+        public Weapon Weapon
+        {
+            get { return _weapon; }
+            set { _weapon = value; }
         }
 
 
@@ -163,10 +174,16 @@ namespace Troopers.Model
 
             if (squaredDistance > _time * _time)
                 return Distance.Far;
-            else if (squaredDistance > (_time - _weapon.TimeToShoot) * (_time - _weapon.TimeToShoot))
+            else if (squaredDistance > (_time - Weapon.TimeToShoot) * (_time - Weapon.TimeToShoot))
                 return Distance.Medium;
 
             return Distance.Close;
+        }
+
+
+        public void Hit(int damage)
+        {
+            _health = _health - damage;
         }
     }
 }

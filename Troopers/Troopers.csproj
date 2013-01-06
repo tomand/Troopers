@@ -110,6 +110,7 @@
     <Compile Include="Controller\ControllerBase.cs" />
     <Compile Include="Controller\LevelController.cs" />
     <Compile Include="Controller\MainMenuController.cs" />
+    <Compile Include="Model\Bullet.cs" />
     <Compile Include="Model\ComputerControlledTrooper.cs" />
     <Compile Include="Model\Cursor.cs" />
     <Compile Include="Model\Level.cs" />
@@ -121,6 +122,7 @@
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Controller\MasterController.cs" />
+    <Compile Include="View\BulletView.cs" />
     <Compile Include="View\Camera.cs" />
     <Compile Include="View\CursorView.cs" />
     <Compile Include="View\GameObjectView.cs" />

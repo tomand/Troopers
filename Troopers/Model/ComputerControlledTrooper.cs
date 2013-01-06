@@ -13,26 +13,57 @@ namespace Troopers.Model
         : base(startPosition, faceDirection, width, height, speed)
         {
             _isControlledByComputer = true;
+            
         }
 
-        public override void Update(GameTime gameTime)
+        public override void Update(GameTime gameTime, IEnumerable<Trooper> troopers)
         {
-            Update(gameTime, GetFaceDirection(), GetGotoPosition(), Position == TargetPosition, false);
+            if (_time > 3 || Position != TargetPosition)
+            {
+                Update(gameTime, GetFaceDirection(GetGotoPosition()), GetGotoPosition(), Position == TargetPosition, false);    
+            }
+            else
+            {
+                ShootingTarget = GetNearestEnemy(troopers);
+                Update(gameTime, GetFaceDirection(ShootingTarget.Position), ShootingTarget.Position, true, true);
+                
+            }
+            
+        }
+
+        private Trooper GetNearestEnemy(IEnumerable<Trooper> troopers)
+        {
+            return troopers.First(t => !t.IsControlledByComputer);
         }
 
         private Vector2 GetGotoPosition()
         {
-            var y = Position.Y + 9;
-            if (y > 10f)
+            var x = Position.X;
+            var y = Position.Y;
+             
+            if (y < 25f && x == 28f)
             {
-                y = 1f;
+                y = y  + 6;
             }
-            return new Vector2(Position.X, y);
+            else if (y == 25f && x > 4f)
+            {
+                x = x - 6;
+            }
+            else if (y > 1f && x == 4f)
+            {
+                y = y  - 6;
+            }
+            else if (y == 1f && x < 28f)
+            {
+                x = x + 6;
+            }
+
+            return new Vector2(x, y);
         }
 
-        private Vector2 GetFaceDirection()
+        private Vector2 GetFaceDirection(Vector2 gotoPosition)
         {
-            Vector2 gotoPosition = GetGotoPosition();
+             
             return new Vector2(gotoPosition.X - 0.5f, gotoPosition.Y - 0.5f);
         }
     }

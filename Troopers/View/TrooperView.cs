@@ -12,11 +12,12 @@ namespace Troopers.View
     class TrooperView : GameObjectView
     {
         private Texture2D _tileMark;
+        private BulletView _bulletView;
 
         public TrooperView(Camera cam)
             : base(cam)
         {
-       
+            _bulletView = new BulletView(cam);
         }
 
         internal void Draw(SpriteBatch spriteBatch, GameTime gameTime, Trooper trooper)
@@ -31,11 +32,21 @@ namespace Troopers.View
         //    spriteBatch.Draw(GameObjectTexture, DestinationRectangle, Color.White);
 
             DrawTrooper(spriteBatch, trooper);
+            DrawBullets(spriteBatch, trooper);
 
             if (trooper.Current)
             {
                 DrawTileMark(spriteBatch);
             }
+        }
+
+        private void DrawBullets(SpriteBatch spriteBatch, Trooper trooper)
+        {
+            foreach (var bullet in trooper.Weapon.GetAliveBullets())
+            {
+                _bulletView.Draw(spriteBatch, bullet);
+            }
+           
         }
 
         private void DrawTrooper(SpriteBatch spriteBatch, Trooper trooper)
@@ -67,6 +78,7 @@ namespace Troopers.View
         {
             GameObjectTexture = content.Load<Texture2D>("trooper");
             _tileMark = content.Load<Texture2D>("tilemark");
+            _bulletView.LoadContent(content);
         }
     }
 }
