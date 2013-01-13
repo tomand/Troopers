@@ -9,26 +9,26 @@ using Troopers.Model;
 
 namespace Troopers.View
 {
-    class MainMenuView : GameObjectView
+    class MenuView : GameObjectView
     {
-        private MainMenu _mainMenu;
+        private BaseMenu _menu;
         private SpriteFont font;
 
-        public MainMenuView(GraphicsDevice graphicsDevice, ContentManager content, MainMenu mainMenu, Camera cam)
+        public MenuView(GraphicsDevice graphicsDevice, ContentManager content, BaseMenu menu, Camera cam)
             : base(cam)
         {
-            _mainMenu = mainMenu;
-
-
+            _menu = menu;
         }
 
         internal void Draw(SpriteBatch spriteBatch)
         {
-            float positionY = _mainMenu.Position.Y;
-            float positionYIncrement =  _mainMenu.Height / (float)_mainMenu.GetMenuItems().Count()  ;
-            foreach (MenuItem menuItem in _mainMenu.GetMenuItems())
+            float positionY = _menu.Position.Y;
+            float positionYIncrement =  _menu.Height / ((float)_menu.GetMenuItems().Count() + 1);
+            spriteBatch.DrawString(font, _menu.Header, Camera.Transform(_menu.Position), Color.Orange);
+            positionY += positionYIncrement;
+            foreach (MenuItem menuItem in _menu.GetMenuItems())
             {
-                DrawMenuItem(menuItem, spriteBatch, new Vector2(_mainMenu.Position.X, positionY));
+                DrawMenuItem(menuItem, spriteBatch, new Vector2(_menu.Position.X, positionY));
                 positionY += positionYIncrement;
             }
         }
@@ -37,7 +37,7 @@ namespace Troopers.View
         {
             if (menuItem.IsSelected)
             {
-                Rectangle? sourceRectangle = new Rectangle(0, 0, GameObjectTexture.Height, GameObjectTexture.Height);
+                 Rectangle? sourceRectangle = new Rectangle(0, 0, GameObjectTexture.Height, GameObjectTexture.Height);
 
                 DestinationRectangle = new Rectangle((int)Camera.TransformX(menuItemPosition.X - 0.04f), (int)Camera.TransformY(menuItemPosition.Y + 0.01f), Camera.TransformSizeX(0.03f), Camera.TransformSizeY(0.03f));
                 spriteBatch.Draw(GameObjectTexture, DestinationRectangle, sourceRectangle, Color.White);

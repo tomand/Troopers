@@ -11,23 +11,24 @@ using Troopers.View;
 
 namespace Troopers.Controller
 {
-    class MainMenuController : ControllerBase
+    class PauseMenuController : ControllerBase
     {
-        private MainMenu _mainMenu;
-        public MenuView MenuView { get; set; }
+        private PauseMenu _pauseMenu;
+        public MenuView _pauseMenuView { get; set; }
 
-        public event EventHandler StartGame;
+        public event EventHandler RestartGame;
         public event EventHandler ExitGame;
+        public event EventHandler ResumeGame;
         public event EventHandler ShowHelp;
 
-        public MainMenuController(int viewportWidth, int viewportHeight, GraphicsDevice graphicsDevice, ContentManager content)
+        public PauseMenuController(int viewportWidth, int viewportHeight, GraphicsDevice graphicsDevice, ContentManager content)
         {
             _viewportWidth = viewportWidth;
             _viewportHeight = viewportHeight;
             _graphicsDevice = graphicsDevice;
             _content = content;
-            _mainMenu = new MainMenu(new Vector2(0.1f,0.1f), 0.12f);
-            MenuView = new MenuView(_graphicsDevice, _content, _mainMenu, GetCamera());
+            _pauseMenu = new PauseMenu(new Vector2(0.1f, 0.1f), 0.12f);
+            _pauseMenuView = new MenuView(_graphicsDevice, _content, _pauseMenu, GetCamera());
         }
 
         private Camera GetCamera()
@@ -43,7 +44,7 @@ namespace Troopers.Controller
                 HandleEnterKeyPress();
             else
             {
-                _mainMenu.Update(gameTime, GetMenuNavigation(keyboardState));  
+                _pauseMenu.Update(gameTime, GetMenuNavigation(keyboardState));  
             }
             
             _oldKeyboardState = keyboardState;
@@ -51,28 +52,40 @@ namespace Troopers.Controller
 
         private void HandleEnterKeyPress()
         {
-            if (_mainMenu.SelectedItem.Text == "Start")
-                StartLevel(1);
+            if (_pauseMenu.SelectedItem.Text == "Resume")
+                OnResume();
 
-            if (_mainMenu.SelectedItem.Text == "Start Level 1")
-                StartLevel(1);
+            if (_pauseMenu.SelectedItem.Text == "Restart")
+                OnRestart();
 
-            if (_mainMenu.SelectedItem.Text == "Start Level 2")
-                StartLevel(2);
+            if (_pauseMenu.SelectedItem.Text == "Help")
+                OnShowHelp();
 
-            if (_mainMenu.SelectedItem.Text == "Start Level 3")
-                StartLevel(3);
-
-            if (_mainMenu.SelectedItem.Text == "Help")
-                OnHelpSelected();
-
-            if (_mainMenu.SelectedItem.Text == "Exit")
+            if (_pauseMenu.SelectedItem.Text == "Exit")
                 OnExitGame();
         }
 
-        private void OnHelpSelected()
+        private void OnRestart()
         {
-            EventHandler handler = ShowHelp ;
+            EventHandler handler = RestartGame;
+            if (handler != null)
+            {
+                handler(this, new EventArgs());
+            }
+        }
+
+        private void OnResume()
+        {
+            EventHandler handler = ResumeGame;
+            if (handler != null)
+            {
+                handler(this, new EventArgs());
+            }
+        }
+
+        private void OnShowHelp()
+        {
+            EventHandler handler = ShowHelp;
             if (handler != null)
             {
                 handler(this, new EventArgs());
@@ -88,14 +101,12 @@ namespace Troopers.Controller
             }
         }
 
-        private void StartLevel(int levelNumber)
+        private void StartFirstLevel()
         {
-            EventHandler handler = StartGame;
+            EventHandler handler = RestartGame;
             if (handler != null)
             {
-                var level = new LevelNumber();
-                level.Number = levelNumber;
-                handler(this, level);
+                handler(this, new EventArgs());
             }
         }
 
@@ -112,33 +123,16 @@ namespace Troopers.Controller
 
         public void Draw(SpriteBatch spriteBatch, GameTime gameTime)
         {
-            MenuView.Draw(spriteBatch);
+            _pauseMenuView.Draw(spriteBatch);
         }
 
         internal void LoadContent()
         {
-            MenuView.LoadContent(_content);
+            _pauseMenuView.LoadContent(_content);
         }
 
 
     }
-
-    public class LevelNumber : EventArgs
-    {
-        private int _number;
-        public int Number
-        {
-            set
-            {
-                _number = value;
-            }
-            get
-            {
-                return this._number;
-            }
-        }
-    }
-
-
-
 }
+
+

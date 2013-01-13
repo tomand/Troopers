@@ -14,7 +14,7 @@ namespace Troopers.Controller
     class LevelController : ControllerBase
     {
 
-        private List<Level> _levels;
+        private List<Model.Level> _levels;
         private Camera _levelCamera;
         private LevelView _levelView;
         private int _numberOfXTiles = 30;
@@ -23,6 +23,7 @@ namespace Troopers.Controller
         private int _yTileSize = 20;
         private MouseState _oldMouseState;
         public event EventHandler PauseGame;
+        public bool PlayerWon { get { return GetCurrentLevel().PlayerWon; } }
 
         protected virtual void OnPauseGame()
         {
@@ -31,6 +32,9 @@ namespace Troopers.Controller
         }
 
         public event EventHandler LevelFinished;
+        private int _currentLevel;
+        
+
 
         protected virtual void OnLevelFinished()
         {
@@ -38,7 +42,6 @@ namespace Troopers.Controller
             if (handler != null) handler(this, EventArgs.Empty);
         }
 
-        
 
         public LevelController(int viewportWidth, int viewportHeight, GraphicsDevice graphicsDevice, ContentManager content)
         {
@@ -46,18 +49,32 @@ namespace Troopers.Controller
             this._viewportHeight = viewportHeight;
             this._graphicsDevice = graphicsDevice;
             this._content = content;
-            _levels = new List<Level> {new Level(_numberOfXTiles, _numberOfYTiles, new Vector2(0, 0))};
+            _levels = new List<Model.Level>
+                {
+                    new Model.Level(_numberOfXTiles, _numberOfYTiles, new Vector2(0, 0), "level1"),
+                    new Model.Level(_numberOfXTiles, _numberOfYTiles, new Vector2(0, 0), "level2"),
+                    new Model.Level(_numberOfXTiles, _numberOfYTiles, new Vector2(0, 0), "level3")
+                };
             _levelCamera = new Camera(_viewportHeight, _viewportWidth, 50, 10, _xTileSize, _yTileSize, _numberOfXTiles, _numberOfYTiles);
             _levelView = new LevelView(_graphicsDevice, _content, _levels, _levelCamera);
             
            
         }
 
+        public void StartLevel(int levelNumber)
+        {
+            _levels[levelNumber -1].Current = true;
+            GetCurrentLevel().Start();
+        }
+
         public void StartLevel()
         {
-            _levels.First<Level>().Start();
+            GetCurrentLevel().Start();
+        }
 
-
+        private Level GetCurrentLevel()
+        {
+            return _levels.Find(l => l.Current);
         }
 
         internal void LoadConent()
@@ -67,7 +84,7 @@ namespace Troopers.Controller
 
         internal void Update(GameTime gameTime)
         {
-            if (_levels.First<Level>().IsFinished)
+            if (GetCurrentLevel().IsFinished)
             {
                 OnLevelFinished();
             }
@@ -82,7 +99,7 @@ namespace Troopers.Controller
             Vector2 mousePosition = new Vector2(newMouseState.X, newMouseState.Y);
             Vector2 logicalMousePosition = _levelCamera.TransformScreenToLogic(mousePosition);
 
-            _levels.First<Level>().Update(gameTime, logicalMousePosition, LeftButtonIsClicked(newMouseState));
+            GetCurrentLevel().Update(gameTime, logicalMousePosition, LeftButtonIsClicked(newMouseState));
             
             UpdateMouseState(newMouseState);
             _oldKeyboardState = keyboardState;
@@ -104,5 +121,29 @@ namespace Troopers.Controller
         {
             _levelView.Draw(spriteBatch, gameTime);
         }
+
+
+        internal void GotoNextLevel()
+        {
+
+            for (int i = 0; i < _levels.Count; i++)
+            {
+                if (_levels[i].Current && i < _levels.Count -1)
+                {
+                    _levels[i].Current = false;
+                    _levels[i + 1].Current = true;
+                    return;
+                }
+                else if (_levels[i].Current)
+                {
+                    _levels[i].Current = false;
+                    _levels[0].Current = true;
+                    return;
+                }
+            }
+        }
     }
+
+  
+
 }

@@ -108,8 +108,17 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Controller\ControllerBase.cs" />
+    <Compile Include="Controller\HelpController.cs" />
+    <Compile Include="View\HelpView.cs" />
+    <Compile Include="Model\GameOverMenu.cs" />
+    <Compile Include="Controller\GameOverMenuController.cs" />
     <Compile Include="Controller\LevelController.cs" />
     <Compile Include="Controller\MainMenuController.cs" />
+    <Compile Include="Model\BaseMenu.cs" />
+    <Compile Include="Model\Help.cs" />
+    <Compile Include="View\PauseMenuView.cs" />
+    <Compile Include="Model\PauseMenu.cs" />
+    <Compile Include="Controller\PauseMenuController.cs" />
     <Compile Include="Model\Bullet.cs" />
     <Compile Include="Model\ComputerControlledTrooper.cs" />
     <Compile Include="Model\Cursor.cs" />
@@ -127,7 +136,7 @@
     <Compile Include="View\CursorView.cs" />
     <Compile Include="View\GameObjectView.cs" />
     <Compile Include="View\LevelView.cs" />
-    <Compile Include="View\MainMenuView.cs" />
+    <Compile Include="View\MenuView.cs" />
     <Compile Include="View\TrooperView.cs" />
   </ItemGroup>
   <ItemGroup>

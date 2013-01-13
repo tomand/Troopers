@@ -10,13 +10,17 @@ namespace Troopers.Model
     {
         public string Text { get; set; }
         public bool IsSelected { get; set; }
+        public bool Visible { get; set; }
 
         public MenuItem(string text, bool isSelected)
         {
             Text = text;
             IsSelected = isSelected;
+            Visible = true;
         }
 
-        
+
+
+       
     }
 }

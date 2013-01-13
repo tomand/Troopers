@@ -6,24 +6,20 @@ using Microsoft.Xna.Framework;
 
 namespace Troopers.Model
 {
-    class MainMenu : BaseMenu
+    class PauseMenu : BaseMenu
     {
-        public MainMenu(Vector2 position, float height)
+       public PauseMenu(Microsoft.Xna.Framework.Vector2 position, float height)
         {
             _position = position;
-            Header = "Main menu";
+            Header = "The game is paused";
             _menuItems = new List<MenuItem>();
-            _menuItems.Add(new MenuItem("Start", true));
-            _menuItems.Add(new MenuItem("Start Level 1", false));
-            _menuItems.Add(new MenuItem("Start Level 2", false));
-            _menuItems.Add(new MenuItem("Start Level 3", false));
+            _menuItems.Add(new MenuItem("Resume", true));
+            _menuItems.Add(new MenuItem("Restart", false));
             _menuItems.Add(new MenuItem("Help", false));
             _menuItems.Add(new MenuItem("Exit", false));
             Height = height * (_menuItems.Count + 1);
         }
 
-        
+       
     }
-
-   
 }

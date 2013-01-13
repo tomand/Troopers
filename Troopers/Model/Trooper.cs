@@ -44,7 +44,7 @@ namespace Troopers.Model
 
         private void InitiateNewTurn()
         {
-           _time = 9;
+           _time = 12;
         }
 
 
@@ -116,7 +116,7 @@ namespace Troopers.Model
 
         }
 
-        private float GetDistanceSquared(Vector2 distantPosition)
+        protected float GetDistanceSquared(Vector2 distantPosition)
         {
             if (_position.Equals(distantPosition))
             {

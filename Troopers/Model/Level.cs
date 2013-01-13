@@ -41,18 +41,26 @@ namespace Troopers.Model
           
         }
 
+        public bool PlayerWon
+        {
+            get { return IsFinished && _troopers.Count(t => !t.IsControlledByComputer && t.IsAlive) > 0; }
+        }
+
+        public bool Current { get; set; }
         List<Trooper> _troopers;
         private  Cursor _cursor;
         private readonly Random _random;
         private int _nextActiveTrooper = 1;
+        private string _levelId;
 
-        public Level(int width, int height, Vector2 position)
+        public Level(int width, int height, Vector2 position, string levelId)
         {
             _random = new Random();
             _position = position;
             _width = width;
             _height = height;
             _cursor = new Cursor(new Vector2(0, 0), 1f);
+            _levelId = levelId;
             //}
 
             //for (int i = 2; i < 26; i += 2)
@@ -140,15 +148,58 @@ namespace Troopers.Model
 
         public void Start()
         {
-            _nextActiveTrooper = 1;
+            _nextActiveTrooper = 0;
            
             _troopers = new List<Trooper>();
-            _troopers.Add(new Trooper(new Vector2(1f, 28f), 90f, 1f, 1f, _random.Next(100, 200)));
-            _troopers.Add(new ComputerControlledTrooper(new Vector2(28f, 1f), 90f, 1f, 1f, _random.Next(100, 200)));
-                
+            
+            LoadLevelData();
 
+            GetNextTrooper().Current = true;
+            SetNextActiveTrooper();
+        }
 
-            _troopers.First().Current = true;
+        private void LoadLevelData()
+        {
+            switch (_levelId)
+            {
+                case "level1":
+                    {
+                        _troopers.Add(new Trooper(new Vector2(1f, 28f), 90f, 1f, 1f, _random.Next(100, 200)));
+                        _troopers.Add(GetComputerControlledTrooper(new Vector2(28f, 1f), 90f, 1f, 1f, _random.Next(100, 200)));
+                        break;
+                    }
+                case "level2":
+                    {
+                        _troopers.Add(new Trooper(new Vector2(1f, 1f), 90f, 1f, 1f, _random.Next(100, 200)));
+                        _troopers.Add(GetComputerControlledTrooper(new Vector2(28f, 1f), 90f, 1f, 1f, _random.Next(100, 200)));
+                        break;
+                    }
+                case "level3":
+                    {
+                        _troopers.Add(new Trooper(new Vector2(28f, 28f), 90f, 1f, 1f, _random.Next(100, 200)));
+                        _troopers.Add(GetComputerControlledTrooper(new Vector2(28f, 1f), 90f, 1f, 1f, _random.Next(100, 200)));
+                        break;
+                    }
+            }
+            
+        }
+
+        private ComputerControlledTrooper GetComputerControlledTrooper(Vector2 startPosition, float faceDirection, float width, float height, int speed)
+        {
+            return new ComputerControlledTrooper(startPosition, faceDirection, width, height, speed, GetAllPositions());
+        }
+
+        private List<Vector2> GetAllPositions()
+        {
+            List<Vector2> positions = new List<Vector2>();
+            for (int i = 0; i < Width; i++)
+            {
+                for (int j = 0; j < Height; j++)
+                {
+                    positions.Add(new Vector2(i,j));
+                }
+            }
+            return positions;
         }
     }
 }

@@ -11,23 +11,26 @@ using Troopers.View;
 
 namespace Troopers.Controller
 {
-    class MainMenuController : ControllerBase
+    internal class GameOverMenuController : ControllerBase
     {
-        private MainMenu _mainMenu;
-        public MenuView MenuView { get; set; }
+        private GameOverMenu _gameOverMenu;
+        public MenuView _gameOverMenuView { get; set; }
+        public bool PlayerWon { set { _gameOverMenu.PlayerWon = value; } }
 
-        public event EventHandler StartGame;
+        public event EventHandler RestartGame;
         public event EventHandler ExitGame;
+        public event EventHandler ContinueGame;
         public event EventHandler ShowHelp;
 
-        public MainMenuController(int viewportWidth, int viewportHeight, GraphicsDevice graphicsDevice, ContentManager content)
+        public GameOverMenuController(int viewportWidth, int viewportHeight, GraphicsDevice graphicsDevice,
+                                      ContentManager content)
         {
             _viewportWidth = viewportWidth;
             _viewportHeight = viewportHeight;
             _graphicsDevice = graphicsDevice;
             _content = content;
-            _mainMenu = new MainMenu(new Vector2(0.1f,0.1f), 0.12f);
-            MenuView = new MenuView(_graphicsDevice, _content, _mainMenu, GetCamera());
+            _gameOverMenu = new GameOverMenu(new Vector2(0.1f, 0.1f), 0.12f);
+            _gameOverMenuView = new MenuView(_graphicsDevice, _content, _gameOverMenu, GetCamera());
         }
 
         private Camera GetCamera()
@@ -43,36 +46,51 @@ namespace Troopers.Controller
                 HandleEnterKeyPress();
             else
             {
-                _mainMenu.Update(gameTime, GetMenuNavigation(keyboardState));  
+                _gameOverMenu.Update(gameTime, GetMenuNavigation(keyboardState));
             }
-            
+
             _oldKeyboardState = keyboardState;
         }
 
         private void HandleEnterKeyPress()
         {
-            if (_mainMenu.SelectedItem.Text == "Start")
-                StartLevel(1);
+            if (_gameOverMenu.SelectedItem.Text == "Continue")
+                OnContinue();
 
-            if (_mainMenu.SelectedItem.Text == "Start Level 1")
-                StartLevel(1);
+            if (_gameOverMenu.SelectedItem.Text == "Restart")
+                OnRestart();
 
-            if (_mainMenu.SelectedItem.Text == "Start Level 2")
-                StartLevel(2);
+            if (_gameOverMenu.SelectedItem.Text == "Help")
+                OnShowHelp();
 
-            if (_mainMenu.SelectedItem.Text == "Start Level 3")
-                StartLevel(3);
-
-            if (_mainMenu.SelectedItem.Text == "Help")
-                OnHelpSelected();
-
-            if (_mainMenu.SelectedItem.Text == "Exit")
+            if (_gameOverMenu.SelectedItem.Text == "Exit")
                 OnExitGame();
         }
 
-        private void OnHelpSelected()
+      
+
+        private void OnRestart()
         {
-            EventHandler handler = ShowHelp ;
+            EventHandler handler = RestartGame;
+            if (handler != null)
+            {
+                handler(this, new EventArgs());
+            }
+        }
+
+        private void OnContinue()
+        
+        {
+            EventHandler handler = ContinueGame;
+            if (handler != null)
+            {
+                handler(this, new EventArgs());
+            }
+        }
+
+        private void OnShowHelp()
+        {
+            EventHandler handler = ShowHelp;
             if (handler != null)
             {
                 handler(this, new EventArgs());
@@ -88,20 +106,10 @@ namespace Troopers.Controller
             }
         }
 
-        private void StartLevel(int levelNumber)
-        {
-            EventHandler handler = StartGame;
-            if (handler != null)
-            {
-                var level = new LevelNumber();
-                level.Number = levelNumber;
-                handler(this, level);
-            }
-        }
 
         private MenuNavigation GetMenuNavigation(KeyboardState keyboardState)
         {
-            if ( IsKeyPressed(keyboardState, Keys.Down)) 
+            if (IsKeyPressed(keyboardState, Keys.Down))
                 return MenuNavigation.Next;
 
             if (IsKeyPressed(keyboardState, Keys.Up))
@@ -112,33 +120,15 @@ namespace Troopers.Controller
 
         public void Draw(SpriteBatch spriteBatch, GameTime gameTime)
         {
-            MenuView.Draw(spriteBatch);
+            _gameOverMenuView.Draw(spriteBatch);
         }
 
         internal void LoadContent()
         {
-            MenuView.LoadContent(_content);
+            _gameOverMenuView.LoadContent(_content);
         }
 
 
+
     }
-
-    public class LevelNumber : EventArgs
-    {
-        private int _number;
-        public int Number
-        {
-            set
-            {
-                _number = value;
-            }
-            get
-            {
-                return this._number;
-            }
-        }
-    }
-
-
-
 }

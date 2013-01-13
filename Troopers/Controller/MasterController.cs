@@ -24,6 +24,10 @@ namespace Troopers.Controller
 
         LevelController _levelController;
         private MainMenuController _mainMenuController;
+        private PauseMenuController _pauseMenuController;
+        private GameOverMenuController _gameOverMenuController;
+        private HelpController _helpController;
+        private ControllerBase _lastController;
 
         public MasterController()
         {
@@ -36,35 +40,110 @@ namespace Troopers.Controller
             _levelController = new LevelController(ViewportWidth, ViewportHeight, GraphicsDevice, Content);
             
             _levelController.IsActive = false;
+            
             _mainMenuController = new MainMenuController(ViewportWidth, ViewportHeight, GraphicsDevice, Content);
-            _mainMenuController.IsActive = true;
-           
-            _mainMenuController.StartGame += MainMenuControllerOnStartGame;
+            _mainMenuController.IsActive = false;
+            _pauseMenuController = new PauseMenuController(ViewportWidth, ViewportHeight, GraphicsDevice, Content);
+            _pauseMenuController.IsActive = false;
+            _gameOverMenuController = new GameOverMenuController(ViewportWidth, ViewportHeight, GraphicsDevice, Content);
+            _gameOverMenuController.IsActive = false;
+            _helpController = new HelpController(ViewportWidth, ViewportHeight, GraphicsDevice, Content);
+            _helpController.IsActive = true;
+
+            _lastController = _mainMenuController;
+            _mainMenuController.StartGame += StartGame;
             _mainMenuController.ExitGame += (sender, args) => { this.Exit(); };
+            _mainMenuController.ShowHelp += (sender, args) => ShowHelp(sender);
+
+            _pauseMenuController.ExitGame += (sender, args) => { this.Exit(); };
+            _pauseMenuController.RestartGame += StartGame;
+            _pauseMenuController.ResumeGame += ResumeGame;
+            _pauseMenuController.ShowHelp += (sender, args) => ShowHelp(sender);
+
+            _gameOverMenuController.ExitGame += (sender, args) => { this.Exit(); };
+            _gameOverMenuController.RestartGame += RestartGame;
+            _gameOverMenuController.ContinueGame += ContinueGame;
+            _gameOverMenuController.ShowHelp += (sender, args) => ShowHelp(sender);
+            
             _levelController.PauseGame += (sender, args) => ShowPauseMenu();
-            _levelController.LevelFinished += (sender, args) => FinishLevel();
-      
+            _levelController.LevelFinished += (sender, args) => FinishLevel(args);
+
+            _helpController.GoBack += (sender, EventArgs) => GoBackFromHelp();
 
         }
 
-        private void FinishLevel()
+        private void GoBackFromHelp()
         {
-            _mainMenuController.IsActive = true;
+            _helpController.IsActive = false;
+            _lastController.IsActive = true;
+        }
+
+        private void RestartGame(object sender, EventArgs e)
+        {
+            _mainMenuController.IsActive = false;
+            _pauseMenuController.IsActive = false;
+            _gameOverMenuController.IsActive = false;
+            _levelController.IsActive = true;
+            _levelController.StartLevel();
+        }
+
+        private void ContinueGame(object sender, EventArgs e)
+        {
+            _mainMenuController.IsActive = false;
+            _pauseMenuController.IsActive = false;
+            _gameOverMenuController.IsActive = false;
+            _levelController.IsActive = true;
+            _levelController.GotoNextLevel();
+            _levelController.StartLevel();
+        }
+
+
+        private void ResumeGame(object sender, EventArgs e)
+        {
+            _mainMenuController.IsActive = false;
+            _pauseMenuController.IsActive = false;
+            _gameOverMenuController.IsActive = false;
+            _levelController.IsActive = true;
+        }
+
+        private void FinishLevel(EventArgs args)
+        {
+            _gameOverMenuController.PlayerWon = _levelController.PlayerWon;
+            _gameOverMenuController.IsActive = true;
+            _mainMenuController.IsActive = false;
+            _pauseMenuController.IsActive = false;
             _levelController.IsActive = false;
         }
+
+       
 
         private void ShowPauseMenu()
         {
-            _mainMenuController.IsActive = true;
+            _pauseMenuController.IsActive = true;
+            _gameOverMenuController.IsActive = false;
+            _mainMenuController.IsActive = false;
             _levelController.IsActive = false;
         }
 
 
-        private void MainMenuControllerOnStartGame(object sender, EventArgs eventArgs)
+        private void StartGame(object sender, EventArgs eventArgs)
         {
             _mainMenuController.IsActive = false;
+            _pauseMenuController.IsActive = false;
+            _gameOverMenuController.IsActive = false;
+
             _levelController.IsActive = true;
-            _levelController.StartLevel();
+            var levelNumber = (LevelNumber) eventArgs;
+            
+            _levelController.StartLevel(levelNumber.Number);
+        }
+
+        private void ShowHelp(object sender)
+        {
+            var sourceController = (ControllerBase) sender;
+            sourceController.IsActive = false;
+            _lastController = sourceController;
+            _helpController.IsActive = true;
         }
 
         /// <summary>
@@ -91,6 +170,9 @@ namespace Troopers.Controller
 
             _levelController.LoadConent();
             _mainMenuController.LoadContent();
+            _pauseMenuController.LoadContent();
+            _gameOverMenuController.LoadContent();
+            _helpController.LoadContent();
         }
 
         /// <summary>
@@ -119,6 +201,15 @@ namespace Troopers.Controller
             if (_mainMenuController.IsActive)
                 _mainMenuController.Update(gameTime);
 
+            if (_pauseMenuController.IsActive)
+                _pauseMenuController.Update(gameTime);
+
+            if (_gameOverMenuController.IsActive)
+                _gameOverMenuController.Update(gameTime);
+
+            if (_helpController.IsActive)
+                _helpController.Update(gameTime);
+
             base.Update(gameTime);
         }
 
@@ -138,6 +229,15 @@ namespace Troopers.Controller
 
             if (_mainMenuController.IsActive)
                 _mainMenuController.Draw(_spriteBatch, gameTime);
+
+            if (_pauseMenuController.IsActive)
+                _pauseMenuController.Draw(_spriteBatch, gameTime);
+
+            if (_gameOverMenuController.IsActive)
+                _gameOverMenuController.Draw(_spriteBatch, gameTime);
+
+            if (_helpController.IsActive)
+                _helpController.Draw(_spriteBatch, gameTime);
             
             _spriteBatch.End();
             
