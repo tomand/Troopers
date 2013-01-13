@@ -52,6 +52,7 @@ namespace Troopers.Model
         private readonly Random _random;
         private int _nextActiveTrooper = 1;
         private string _levelId;
+        private List<MediKit> _mediKits;
 
         public Level(int width, int height, Vector2 position, string levelId)
         {
@@ -61,18 +62,7 @@ namespace Troopers.Model
             _height = height;
             _cursor = new Cursor(new Vector2(0, 0), 1f);
             _levelId = levelId;
-            //}
-
-            //for (int i = 2; i < 26; i += 2)
-            //{
-            //    _troopers.Add(new Trooper(new Vector2((float)i, 2f), 45f, 2f, 2f));
-
-            //}
-            //for (int i = 26; i < 51; i += 1)
-            //{
-            //    _troopers.Add(new Trooper(new Vector2((float)i, 2f), 45f, 1f, 1f));
-
-            //}
+         
         }
 
         internal IEnumerable<Trooper> GetTroopers()
@@ -81,9 +71,13 @@ namespace Troopers.Model
         }
 
 
-        public void Update(GameTime gameTime, Vector2 mousePosition, bool mouseClicked)
+        public void Update(GameTime gameTime, Vector2 mousePosition, bool mouseClicked, bool tabIsClicked)
         {
-            Trooper trooper = GetCurrentTrooper();
+           Trooper trooper = GetCurrentTrooper();
+            if (tabIsClicked)
+            {
+                trooper.EndTurn();
+            }
             
             _cursor.UpdatePosition(mousePosition, Width, Height);
             _cursor.MarksEnemyTrooper = IsComputerControlledTrooperOnPosition(_cursor.Position);
@@ -93,13 +87,19 @@ namespace Troopers.Model
             }
             else
             {
-                trooper.Update(gameTime, _cursor.CenterPosition, _cursor.Position, mouseClicked, _cursor.MarksEnemyTrooper);
+                trooper.Update(gameTime, _cursor.CenterPosition, _cursor.Position, mouseClicked && GetPlayerControlledTroopers().Count(t => t.Position.Equals(_cursor.Position)) == 0 , _cursor.MarksEnemyTrooper);
                 if (_cursor.MarksEnemyTrooper)
                 {
                     trooper.ShootingTarget = GetTrooperOnPosition(_cursor.Position);
                 }
+                if (_mediKits.Count(m => m.Position.Equals(trooper.Position) && !m.IsTaken) > 0)
+                {
+                    _mediKits.Find(m => m.Position.Equals(trooper.Position)).IsTaken = true;
+                    trooper.Heal();
+                }
             }
             
+
             _cursor.DistanceGrade = trooper.GetDistanceGrade(_cursor.Position);
 
             if (trooper.HasNoTimeLeft) 
@@ -108,24 +108,34 @@ namespace Troopers.Model
 
         private Trooper GetTrooperOnPosition(Vector2 position)
         {
-            return _troopers.Find(t => t.Position.Equals(position));
+            return _troopers.Find(t => t.Position.Equals(position) && t.IsAlive);
         }
 
         private IEnumerable<Trooper> GetPlayerControlledTroopers()
         {
-            return _troopers.Where(t => !t.IsControlledByComputer);
+            return _troopers.Where(t => !t.IsControlledByComputer && t.IsAlive);
         }
 
         private bool IsComputerControlledTrooperOnPosition(Vector2 position)
         {
-            return _troopers.Exists(t => t.Position.Equals(position) && t.IsControlledByComputer);
+            return _troopers.Exists(t => t.Position.Equals(position) && t.IsAlive && t.IsControlledByComputer);
         }
 
         private void UpdateWhoIsCurrent(Trooper trooper)
         {
-            trooper.Current = false;
-            GetNextTrooper().Current = true;
-            SetNextActiveTrooper();
+            for (int i = 0; i < _troopers.Count(t => t.IsAlive); i++)
+            {
+                if (_troopers.Where(t => t.IsAlive).OrderByDescending(t => t.Speed).ElementAt(i).Current)
+                {
+                    _troopers.Where(t => t.IsAlive).OrderByDescending(t => t.Speed).ElementAt(i).Current = false;
+                    _troopers.Where(t => t.IsAlive).OrderByDescending(t => t.Speed).ElementAt(i + 1 == _troopers.Count(t => t.IsAlive)? 0: i+1).Current = true;
+                    return;
+                }
+            }
+            
+            //trooper.Current = false;
+            //GetNextTrooper().Current = true;
+            //SetNextActiveTrooper();
         }
 
         private Trooper GetCurrentTrooper()
@@ -133,29 +143,16 @@ namespace Troopers.Model
             return _troopers.Find(t => t.Current);
         }
 
-        private void SetNextActiveTrooper()
-        {
-            _nextActiveTrooper++;
-            if (_nextActiveTrooper == _troopers.Count)
-                _nextActiveTrooper = 0;
-        }
-
-        private Trooper GetNextTrooper()
-        {
-            _nextActiveTrooper = Math.Min(_nextActiveTrooper, _troopers.Count(t => t.IsAlive) - 1);
-            return _troopers.Where(t => t.IsAlive).OrderByDescending(t => t.Speed).ElementAt(_nextActiveTrooper);
-        }
+       
 
         public void Start()
         {
-            _nextActiveTrooper = 0;
-           
-            _troopers = new List<Trooper>();
+           _troopers = new List<Trooper>();
+            _mediKits = new List<MediKit>();
             
             LoadLevelData();
 
-            GetNextTrooper().Current = true;
-            SetNextActiveTrooper();
+            _troopers.Where(t => t.IsAlive).OrderByDescending(t => t.Speed).ElementAt(0).Current = true;
         }
 
         private void LoadLevelData()
@@ -170,14 +167,31 @@ namespace Troopers.Model
                     }
                 case "level2":
                     {
-                        _troopers.Add(new Trooper(new Vector2(1f, 1f), 90f, 1f, 1f, _random.Next(100, 200)));
+
+                        _troopers.Add(new Trooper(new Vector2(1f, 28f), 90f, 1f, 1f, _random.Next(100, 200)));
+                        _troopers.Add(new Trooper(new Vector2(9f, 20f), 90f, 1f, 1f, _random.Next(100, 200)));
+                        _troopers.Add(new Trooper(new Vector2(1f, 20f), 90f, 1f, 1f, _random.Next(100, 200)));
                         _troopers.Add(GetComputerControlledTrooper(new Vector2(28f, 1f), 90f, 1f, 1f, _random.Next(100, 200)));
+                        _troopers.Add(GetComputerControlledTrooper(new Vector2(20f, 1f), 90f, 1f, 1f, _random.Next(100, 200)));
+                        _troopers.Add(GetComputerControlledTrooper(new Vector2(28f, 9f), 90f, 1f, 1f, _random.Next(100, 200)));
+                        
                         break;
                     }
                 case "level3":
                     {
-                        _troopers.Add(new Trooper(new Vector2(28f, 28f), 90f, 1f, 1f, _random.Next(100, 200)));
+                        _troopers.Add(new Trooper(new Vector2(1f, 28f), 90f, 1f, 1f, _random.Next(100, 200), 80));
                         _troopers.Add(GetComputerControlledTrooper(new Vector2(28f, 1f), 90f, 1f, 1f, _random.Next(100, 200)));
+                        _troopers.Add(GetComputerControlledTrooper(new Vector2(20f, 1f), 90f, 1f, 1f, _random.Next(100, 200)));
+                        _troopers.Add(GetComputerControlledTrooper(new Vector2(28f, 9f), 90f, 1f, 1f, _random.Next(100, 200)));
+                        _mediKits.Add(new MediKit(new Vector2(5f, 20f)));
+                        _mediKits.Add(new MediKit(new Vector2(7f, 23f)));
+                        _mediKits.Add(new MediKit(new Vector2(19f, 12f)));
+                        _mediKits.Add(new MediKit(new Vector2(10f, 10f)));
+                        _mediKits.Add(new MediKit(new Vector2(20f, 5f)));
+                        _mediKits.Add(new MediKit(new Vector2(15f, 25f)));
+                        _mediKits.Add(new MediKit(new Vector2(18f, 27f)));
+                        _mediKits.Add(new MediKit(new Vector2(15f, 15f)));
+                        
                         break;
                     }
             }
@@ -200,6 +214,18 @@ namespace Troopers.Model
                 }
             }
             return positions;
+        }
+
+        public IEnumerable<MediKit> GetMediKits()
+        {
+            return _mediKits.Where(m => !m.IsTaken);
+        }
+
+        public IEnumerable<Trooper> GetDeadTroopers()
+        {
+            List<Trooper> deadTroopers = _troopers.Where(t => !t.IsAlive).ToList();
+            _troopers.RemoveAll(t => !t.IsAlive);
+            return deadTroopers;
         }
     }
 }

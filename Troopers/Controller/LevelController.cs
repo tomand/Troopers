@@ -33,7 +33,7 @@ namespace Troopers.Controller
 
         public event EventHandler LevelFinished;
         private int _currentLevel;
-        
+        private KilledTrooperView _killedTrooperView;
 
 
         protected virtual void OnLevelFinished()
@@ -55,9 +55,9 @@ namespace Troopers.Controller
                     new Model.Level(_numberOfXTiles, _numberOfYTiles, new Vector2(0, 0), "level2"),
                     new Model.Level(_numberOfXTiles, _numberOfYTiles, new Vector2(0, 0), "level3")
                 };
-            _levelCamera = new Camera(_viewportHeight, _viewportWidth, 50, 10, _xTileSize, _yTileSize, _numberOfXTiles, _numberOfYTiles);
+            _levelCamera = new Camera(_viewportHeight, _viewportWidth, 10, 10, _xTileSize, _yTileSize, _numberOfXTiles, _numberOfYTiles);
             _levelView = new LevelView(_graphicsDevice, _content, _levels, _levelCamera);
-            
+            _killedTrooperView = new KilledTrooperView(_levelCamera);
            
         }
 
@@ -80,13 +80,20 @@ namespace Troopers.Controller
         internal void LoadConent()
         {
             _levelView.LoadContent(_content);
+            _killedTrooperView.LoadContent(_content);
         }
 
         internal void Update(GameTime gameTime)
         {
-            if (GetCurrentLevel().IsFinished)
+            foreach (Trooper trooper in GetCurrentLevel().GetDeadTroopers())
+            {
+                _killedTrooperView.Play(trooper.CenterPosition);
+            }
+
+            if (GetCurrentLevel().IsFinished && !_killedTrooperView.IsAlive)
             {
                 OnLevelFinished();
+                return;
             }
             
             KeyboardState keyboardState = Keyboard.GetState();
@@ -99,10 +106,18 @@ namespace Troopers.Controller
             Vector2 mousePosition = new Vector2(newMouseState.X, newMouseState.Y);
             Vector2 logicalMousePosition = _levelCamera.TransformScreenToLogic(mousePosition);
 
-            GetCurrentLevel().Update(gameTime, logicalMousePosition, LeftButtonIsClicked(newMouseState));
+            GetCurrentLevel().Update(gameTime, logicalMousePosition, LeftButtonIsClicked(newMouseState), IsKeyPressed(keyboardState, Keys.Tab));
+
+            if (_killedTrooperView.IsAlive)
+            {
+                _killedTrooperView.Update(gameTime);
+            }
             
+
             UpdateMouseState(newMouseState);
             _oldKeyboardState = keyboardState;
+
+          
         }
 
        
@@ -120,6 +135,8 @@ namespace Troopers.Controller
         public void Draw(SpriteBatch spriteBatch, GameTime gameTime)
         {
             _levelView.Draw(spriteBatch, gameTime);
+            if (_killedTrooperView.IsAlive)
+                _killedTrooperView.Draw(gameTime, spriteBatch);
         }
 
 

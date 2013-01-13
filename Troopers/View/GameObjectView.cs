@@ -3,7 +3,7 @@ using Microsoft.Xna.Framework;
 
 namespace Troopers.View
 {
-    class GameObjectView
+    public class GameObjectView
     {
        // protected SpriteBatch spriteBatch;
         private Texture2D _gameObjectTexture;

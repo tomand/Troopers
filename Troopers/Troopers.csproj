@@ -109,6 +109,8 @@
   <ItemGroup>
     <Compile Include="Controller\ControllerBase.cs" />
     <Compile Include="Controller\HelpController.cs" />
+    <Compile Include="Model\Dice.cs" />
+    <Compile Include="Model\MediKit.cs" />
     <Compile Include="View\HelpView.cs" />
     <Compile Include="Model\GameOverMenu.cs" />
     <Compile Include="Controller\GameOverMenuController.cs" />
@@ -116,6 +118,9 @@
     <Compile Include="Controller\MainMenuController.cs" />
     <Compile Include="Model\BaseMenu.cs" />
     <Compile Include="Model\Help.cs" />
+    <Compile Include="View\KilledTrooperView.cs" />
+    <Compile Include="View\MediKitView.cs" />
+    <Compile Include="View\ParticleView.cs" />
     <Compile Include="View\PauseMenuView.cs" />
     <Compile Include="Model\PauseMenu.cs" />
     <Compile Include="Controller\PauseMenuController.cs" />
@@ -137,6 +142,8 @@
     <Compile Include="View\GameObjectView.cs" />
     <Compile Include="View\LevelView.cs" />
     <Compile Include="View\MenuView.cs" />
+    <Compile Include="View\SplitterParticle.cs" />
+    <Compile Include="View\SplitterSystem.cs" />
     <Compile Include="View\TrooperView.cs" />
   </ItemGroup>
   <ItemGroup>

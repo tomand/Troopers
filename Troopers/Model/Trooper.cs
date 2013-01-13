@@ -15,6 +15,7 @@ namespace Troopers.Model
         protected bool _isControlledByComputer = false;
         private Weapon _weapon;
         private int _health;
+        private int _initialHealth;
 
         public Vector2 Position
         {
@@ -48,7 +49,7 @@ namespace Troopers.Model
         }
 
 
-        public Trooper(Vector2 startPosition,float faceDirection ,float width, float height, int speed)
+        public Trooper(Vector2 startPosition,float faceDirection ,float width, float height, int speed, int health = 40)
         {
             Position = startPosition;
             TargetPosition = startPosition;
@@ -56,7 +57,8 @@ namespace Troopers.Model
             Height = height;
             FaceDirection =  faceDirection;
             Speed = speed;
-            _health = 20;
+            _health = health;
+            _initialHealth = _health;
             Weapon = new Weapon();
             InitiateNewTurn();
         }
@@ -93,19 +95,6 @@ namespace Troopers.Model
 
             Weapon.Update(gameTime);
          
-            // FaceDirection += 0.01f;
-            //if (_position.X >= 50f)
-            //{
-            //    _position.X = 1f;
-            //}
-            //if (_position.Y >= 50f || _position.Y == 1f)
-            //{
-            //    _position.Y = 1f;
-            //}
-
-            //_position.Y += 0.1f;
-            //if (_position.X != 1.0f)
-            //_position.X += 0.1f;
         }
 
         
@@ -160,6 +149,18 @@ namespace Troopers.Model
             set { _weapon = value; }
         }
 
+        public float HealthPercent
+        {
+            get { return (float)_health / (float)_initialHealth; }
+            
+        }
+
+        public void EndTurn()
+        {
+            _time = 0;
+        }
+
+
 
         public void FacePosition(Vector2 positionToFace)
         {
@@ -174,7 +175,7 @@ namespace Troopers.Model
 
             if (squaredDistance > _time * _time)
                 return Distance.Far;
-            else if (squaredDistance > (_time - Weapon.TimeToShoot) * (_time - Weapon.TimeToShoot))
+            else if ((squaredDistance > (_time - Weapon.TimeToShoot) * (_time - Weapon.TimeToShoot)) || (_time < Weapon.TimeToShoot))
                 return Distance.Medium;
 
             return Distance.Close;
@@ -184,6 +185,11 @@ namespace Troopers.Model
         public void Hit(int damage)
         {
             _health = _health - damage;
+        }
+
+        public void Heal()
+        {
+            _health = Math.Min(_health + (_initialHealth / 2), _initialHealth);
         }
     }
 }

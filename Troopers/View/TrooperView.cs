@@ -36,7 +36,7 @@ namespace Troopers.View
 
             if (trooper.Current)
             {
-                DrawTileMark(spriteBatch);
+                DrawTileMark(spriteBatch, trooper);
             }
         }
 
@@ -58,12 +58,27 @@ namespace Troopers.View
             spriteBatch.Draw(GameObjectTexture, new Rectangle(x, y, DestinationRectangle.Width, DestinationRectangle.Height),
                              GetTrooperSpriteSourceRectangle(trooper), Color.White, trooper.FaceDirection, origin,
                              SpriteEffects.None, 0);
+
+            // left side - health
+            var sourceRectangle = new Rectangle(0, 0, 2, _tileMark.Height);
+            var leftDesinationRectangle = new Rectangle(DestinationRectangle.X, DestinationRectangle.Y, 2,
+                                                        Convert.ToInt32(DestinationRectangle.Height * trooper.HealthPercent));
+            spriteBatch.Draw(_tileMark, leftDesinationRectangle, sourceRectangle, Color.White);
+
+            // right side - health
+            sourceRectangle = new Rectangle(_tileMark.Height - 2, 0, 2, _tileMark.Height);
+            // spriteBatch.Draw(_tileMark, DestinationRectangle, sourceRectangle, Color.White);
+            var rightDesinationRectangle = new Rectangle(DestinationRectangle.X + _tileMark.Height - 9, DestinationRectangle.Y, 2,
+                                                        Convert.ToInt32(DestinationRectangle.Height * trooper.HealthPercent));
+            spriteBatch.Draw(_tileMark, rightDesinationRectangle, sourceRectangle, Color.White);
         }
 
-        private void DrawTileMark(SpriteBatch spriteBatch)
+        private void DrawTileMark(SpriteBatch spriteBatch, Trooper trooper)
         {
-            Rectangle? sourceRectangle = new Rectangle(0, 0, _tileMark.Height, _tileMark.Height);
+            Rectangle? sourceRectangle = new Rectangle(2, 0, _tileMark.Height -4, _tileMark.Height);
             spriteBatch.Draw(_tileMark, DestinationRectangle, sourceRectangle, Color.White);
+            
+          
         }
 
         private Rectangle? GetTrooperSpriteSourceRectangle(Trooper trooper)
