@@ -49,6 +49,7 @@ namespace Troopers.Model
             _menuItems = new List<MenuItem>();
             _menuItems.Add(new MenuItem("Continue", true));
             _menuItems.Add(new MenuItem("Restart", false));
+            _menuItems.Add(new MenuItem("Main menu", false));
             _menuItems.Add(new MenuItem("Help", false));
             _menuItems.Add(new MenuItem("Exit", false));
             CalculateHeight();

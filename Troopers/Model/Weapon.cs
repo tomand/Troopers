@@ -9,11 +9,15 @@ namespace Troopers.Model
     public class Weapon
     {
         private List<Bullet> _bullets;
+        private int _damage;
+        private int _maxDistanceSquared;
         public int TimeToShoot { get; set; }
 
         public Weapon()
         {
             TimeToShoot = 3;
+            _damage = 10;
+            _maxDistanceSquared = 900;
             _bullets = new List<Bullet>();
         }
 
@@ -27,7 +31,7 @@ namespace Troopers.Model
 
         public void Fire(float faceDirection, Vector2 centerPosition, Trooper target)
         {
-            _bullets.Add(new Bullet(centerPosition,target));
+            _bullets.Add(new Bullet(centerPosition, target, CalculateDamage(centerPosition, target.CenterPosition, Dice.Roll())));
         }
 
         public void Update(GameTime gameTime)
@@ -41,6 +45,33 @@ namespace Troopers.Model
         public IEnumerable<Bullet> GetAliveBullets()
         {
             return _bullets.Where(b => b.IsAlive);
+        }
+
+        private int CalculateDamage(Vector2 centerPosition, Vector2 target, int randomAdjustment)
+        {
+            int damageBeforeRandomAdjustment = _damage -
+                                               (int)
+                                               Math.Floor((float)_damage *
+                                                          (GetSquaredDistanceFromStartingPoint( centerPosition,  target) /
+                                                           (float)_maxDistanceSquared));
+            int damageAfterRandomAdjustment = damageBeforeRandomAdjustment - randomAdjustment;
+            return Math.Max(0, damageAfterRandomAdjustment);
+        }
+
+        public int GetMinDamage(Vector2 centerPosition, Vector2 target)
+        {
+           return CalculateDamage(centerPosition, target, 6);
+        }
+
+        public int GetMaxDamage(Vector2 centerPosition, Vector2 target)
+        {
+            return CalculateDamage(centerPosition, target, 1);
+        }
+
+
+        private float GetSquaredDistanceFromStartingPoint(Vector2 centerPosition, Vector2 target)
+        {
+            return Vector2.DistanceSquared(centerPosition, target);
         }
     }
 

@@ -28,7 +28,9 @@ namespace Troopers.Model
             get { return new Vector2(Position.X + Width / 2, Position.Y + Height /2); }
         }
 
-        
+        public bool BlockedByBuilding { get; set; }
+
+
         internal void UpdatePosition(Vector2 mousePosition, int levelWidth, int levelHeight)
         {
             Position += 1f * (mousePosition - Position);

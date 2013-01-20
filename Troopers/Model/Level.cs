@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -53,6 +54,7 @@ namespace Troopers.Model
         private int _nextActiveTrooper = 1;
         private string _levelId;
         private List<MediKit> _mediKits;
+        private List<Building> _buildings;
 
         public Level(int width, int height, Vector2 position, string levelId)
         {
@@ -80,14 +82,17 @@ namespace Troopers.Model
             }
             
             _cursor.UpdatePosition(mousePosition, Width, Height);
+            bool buildingIsBetweenCursorAndCurrentTrooper = IsBuildingBetweenCursorAndCurrentTrooper();
             _cursor.MarksEnemyTrooper = IsComputerControlledTrooperOnPosition(_cursor.Position);
+            _cursor.BlockedByBuilding = IsHouseOnPosition(_cursor.Position) || buildingIsBetweenCursorAndCurrentTrooper;
+          //  _cursor.BlockedByBuilding =  buildingIsBetweenCursorAndCurrentTrooper;
             if (trooper.IsControlledByComputer)
             {
-                trooper.Update(gameTime, GetPlayerControlledTroopers());
+                trooper.Update(gameTime, GetPlayerControlledTroopers(), GetBuildings());
             }
             else
             {
-                trooper.Update(gameTime, _cursor.CenterPosition, _cursor.Position, mouseClicked && GetPlayerControlledTroopers().Count(t => t.Position.Equals(_cursor.Position)) == 0 , _cursor.MarksEnemyTrooper);
+                trooper.Update(gameTime, _cursor.CenterPosition, _cursor.Position, !_cursor.BlockedByBuilding && !buildingIsBetweenCursorAndCurrentTrooper && mouseClicked && GetPlayerControlledTroopers().Count(t => t.Position.Equals(_cursor.Position)) == 0, _cursor.MarksEnemyTrooper && !buildingIsBetweenCursorAndCurrentTrooper);
                 if (_cursor.MarksEnemyTrooper)
                 {
                     trooper.ShootingTarget = GetTrooperOnPosition(_cursor.Position);
@@ -104,6 +109,31 @@ namespace Troopers.Model
 
             if (trooper.HasNoTimeLeft) 
                 UpdateWhoIsCurrent(trooper);
+        }
+
+        private bool IsBuildingBetweenCursorAndCurrentTrooper()
+        {
+            foreach (Building building in _buildings)
+            {
+                if (building.IsBetweenPosition(_cursor.CenterPosition, GetCurrentTrooper().CenterPosition))
+                {
+                    return true;
+                }
+                
+            }
+            return false;
+        }
+
+        private bool IsHouseOnPosition(Vector2 position)
+        {
+            foreach (Building building in _buildings)
+            {
+                if (building.CoversPosition(position))
+                {
+                    return true;
+                }
+            }
+            return false;
         }
 
         private Trooper GetTrooperOnPosition(Vector2 position)
@@ -138,7 +168,7 @@ namespace Troopers.Model
             //SetNextActiveTrooper();
         }
 
-        private Trooper GetCurrentTrooper()
+        internal Trooper GetCurrentTrooper()
         {
             return _troopers.Find(t => t.Current);
         }
@@ -149,7 +179,7 @@ namespace Troopers.Model
         {
            _troopers = new List<Trooper>();
             _mediKits = new List<MediKit>();
-            
+            _buildings = new List<Building>();
             LoadLevelData();
 
             _troopers.Where(t => t.IsAlive).OrderByDescending(t => t.Speed).ElementAt(0).Current = true;
@@ -163,6 +193,7 @@ namespace Troopers.Model
                     {
                         _troopers.Add(new Trooper(new Vector2(1f, 28f), 90f, 1f, 1f, _random.Next(100, 200)));
                         _troopers.Add(GetComputerControlledTrooper(new Vector2(28f, 1f), 90f, 1f, 1f, _random.Next(100, 200)));
+                        _buildings.Add(new Building(new Vector2(15, 15), 3f, 3f));
                         break;
                     }
                 case "level2":
@@ -226,6 +257,11 @@ namespace Troopers.Model
             List<Trooper> deadTroopers = _troopers.Where(t => !t.IsAlive).ToList();
             _troopers.RemoveAll(t => !t.IsAlive);
             return deadTroopers;
+        }
+
+        public IEnumerable<Building> GetBuildings()
+        {
+            return _buildings;
         }
     }
 }

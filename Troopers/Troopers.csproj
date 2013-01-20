@@ -109,8 +109,15 @@
   <ItemGroup>
     <Compile Include="Controller\ControllerBase.cs" />
     <Compile Include="Controller\HelpController.cs" />
+    <Compile Include="Model\TrooperInfo.cs" />
+    <Compile Include="Controller\TrooperInfoController.cs" />
+    <Compile Include="View\TrooperInfoView.cs" />
+    <Compile Include="Model\Building.cs" />
+    <Compile Include="Model\LevelManager.cs" />
     <Compile Include="Model\Dice.cs" />
+    <Compile Include="Model\Line.cs" />
     <Compile Include="Model\MediKit.cs" />
+    <Compile Include="View\BuildingView.cs" />
     <Compile Include="View\HelpView.cs" />
     <Compile Include="Model\GameOverMenu.cs" />
     <Compile Include="Controller\GameOverMenuController.cs" />

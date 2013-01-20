@@ -11,7 +11,7 @@ namespace Troopers.Model
         private Vector2 _direction;
         private Trooper _target;
         private int _damage;
-        private int _maxDistanceSquared;
+      
         private int _age;
 
         public bool IsAlive { get; set; }
@@ -27,7 +27,7 @@ namespace Troopers.Model
             get { return _age; }
         }
 
-        public Bullet(Vector2 centerPosition,  Trooper target)
+        public Bullet(Vector2 centerPosition,  Trooper target, int damage)
         {
             _startPosition = centerPosition;
             CurrentPosition = centerPosition;
@@ -36,8 +36,8 @@ namespace Troopers.Model
             _direction.Normalize();
             _target = target;
             IsAlive = true;
-            _damage = 8;
-            _maxDistanceSquared = 900;
+            _damage = damage;
+           
             _age = 0;
         }
 
@@ -50,26 +50,12 @@ namespace Troopers.Model
            }
            else
             {
-               _target.Hit(CalculateDamage());
+               _target.Hit(_damage);
                IsAlive = false;
            }
         }
 
-        private int CalculateDamage()
-        {
-            int damageBeforeRandomAdjustment = _damage -
-                                               (int)
-                                               Math.Floor((float) _damage*
-                                                          (GetSquaredDistanceFromStartingPoint()/
-                                                           (float) _maxDistanceSquared));
-            int damageAfterRandomAdjustment = damageBeforeRandomAdjustment - Dice.Roll();
-            return Math.Max(0, damageAfterRandomAdjustment);
-        }
 
-        private float GetSquaredDistanceFromStartingPoint()
-        {
-            return Vector2.DistanceSquared(_currentPosition, _startPosition);
-        }
 
         private void UpdatePosition(GameTime gameTime)
         {

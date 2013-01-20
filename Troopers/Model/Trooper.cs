@@ -10,11 +10,10 @@ namespace Troopers.Model
     {
         private Vector2 _position;
         Vector2 _direction;
-        protected int _time;
+        public int Time { get; private set; }
         private bool _current;
         protected bool _isControlledByComputer = false;
         private Weapon _weapon;
-        private int _health;
         private int _initialHealth;
 
         public Vector2 Position
@@ -31,7 +30,7 @@ namespace Troopers.Model
         public Vector2 TargetPosition { get; set; }
         public int Speed { get; set; }
         public Trooper ShootingTarget { get; set; }
-        public bool IsAlive { get { return _health > 0; } }
+        public bool IsAlive { get { return Health > 0; } }
 
         public bool Current
         {
@@ -45,7 +44,7 @@ namespace Troopers.Model
 
         private void InitiateNewTurn()
         {
-           _time = 12;
+           Time = 12;
         }
 
 
@@ -57,28 +56,28 @@ namespace Troopers.Model
             Height = height;
             FaceDirection =  faceDirection;
             Speed = speed;
-            _health = health;
-            _initialHealth = _health;
+            Health = health;
+            _initialHealth = Health;
             Weapon = new Weapon();
             InitiateNewTurn();
         }
 
 
-        public virtual void Update(GameTime gameTime, IEnumerable<Trooper> troopers )
+        public virtual void Update(GameTime gameTime, IEnumerable<Trooper> troopers, IEnumerable<Building> buildings )
         {
         }
 
         public void Update(GameTime gameTime, Vector2 cursorCenterPosition, Vector2 cursorPosition, bool mouseClicked, bool enemyIsMarked)
         {
-            if (!enemyIsMarked && mouseClicked && GetDistanceSquared(cursorPosition) <= _time * _time)
+            if (!enemyIsMarked && mouseClicked && GetDistanceSquared(cursorPosition) <= Time * Time)
             {
                 FacePosition(cursorCenterPosition);
                 TargetPosition = cursorPosition;
                 _direction = TargetPosition - Position;
-                _time = _time - (int)Math.Ceiling( Math.Sqrt(GetDistanceSquared(cursorPosition)));
+                Time = Time - (int)Math.Ceiling( Math.Sqrt(GetDistanceSquared(cursorPosition)));
             }
 
-            if (enemyIsMarked && mouseClicked && _time >= _weapon.TimeToShoot)
+            if (enemyIsMarked && mouseClicked && Time >= _weapon.TimeToShoot)
             {
                 FacePosition(cursorCenterPosition);
                 Shoot();
@@ -100,7 +99,7 @@ namespace Troopers.Model
         
         private void Shoot()
         {
-            _time = _time - Weapon.TimeToShoot;
+            Time = Time - Weapon.TimeToShoot;
             Weapon.Fire(FaceDirection, CenterPosition, ShootingTarget);
 
         }
@@ -134,7 +133,7 @@ namespace Troopers.Model
 
         public bool HasNoTimeLeft
         {
-            get { return _time == 0 && (Position == TargetPosition) && !_weapon.IsShooting; }
+            get { return Time == 0 && (Position == TargetPosition) && !_weapon.IsShooting; }
             
         }
 
@@ -151,13 +150,15 @@ namespace Troopers.Model
 
         public float HealthPercent
         {
-            get { return (float)_health / (float)_initialHealth; }
+            get { return (float)Health / (float)_initialHealth; }
             
         }
 
+        public int Health { get; private set; }
+
         public void EndTurn()
         {
-            _time = 0;
+            Time = 0;
         }
 
 
@@ -173,9 +174,9 @@ namespace Troopers.Model
         {
             int squaredDistance = (int) Math.Ceiling( GetDistanceSquared(distantPosition));
 
-            if (squaredDistance > _time * _time)
+            if (squaredDistance > Time * Time)
                 return Distance.Far;
-            else if ((squaredDistance > (_time - Weapon.TimeToShoot) * (_time - Weapon.TimeToShoot)) || (_time < Weapon.TimeToShoot))
+            else if ((squaredDistance > (Time - Weapon.TimeToShoot) * (Time - Weapon.TimeToShoot)) || (Time < Weapon.TimeToShoot))
                 return Distance.Medium;
 
             return Distance.Close;
@@ -184,12 +185,12 @@ namespace Troopers.Model
 
         public void Hit(int damage)
         {
-            _health = _health - damage;
+            Health = Health - damage;
         }
 
         public void Heal()
         {
-            _health = Math.Min(_health + (_initialHealth / 2), _initialHealth);
+            Health = Math.Min(Health + (_initialHealth / 2), _initialHealth);
         }
     }
 }

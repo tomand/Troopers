@@ -23,7 +23,7 @@ namespace Troopers.Controller
         private int _yTileSize = 20;
         private MouseState _oldMouseState;
         public event EventHandler PauseGame;
-        public bool PlayerWon { get { return GetCurrentLevel().PlayerWon; } }
+        public bool PlayerWon { get { return _levelManager.CurrentLevel.PlayerWon; } }
 
         protected virtual void OnPauseGame()
         {
@@ -34,6 +34,8 @@ namespace Troopers.Controller
         public event EventHandler LevelFinished;
         private int _currentLevel;
         private KilledTrooperView _killedTrooperView;
+        private LevelManager _levelManager;
+        private TrooperInfoController _trooperInfoController;
 
 
         protected virtual void OnLevelFinished()
@@ -49,55 +51,59 @@ namespace Troopers.Controller
             this._viewportHeight = viewportHeight;
             this._graphicsDevice = graphicsDevice;
             this._content = content;
-            _levels = new List<Model.Level>
-                {
-                    new Model.Level(_numberOfXTiles, _numberOfYTiles, new Vector2(0, 0), "level1"),
-                    new Model.Level(_numberOfXTiles, _numberOfYTiles, new Vector2(0, 0), "level2"),
-                    new Model.Level(_numberOfXTiles, _numberOfYTiles, new Vector2(0, 0), "level3")
-                };
-            _levelCamera = new Camera(_viewportHeight, _viewportWidth, 10, 10, _xTileSize, _yTileSize, _numberOfXTiles, _numberOfYTiles);
-            _levelView = new LevelView(_graphicsDevice, _content, _levels, _levelCamera);
+            _levelManager = new Model.LevelManager(_numberOfXTiles, _numberOfYTiles);
+          
+            _levelCamera = new Camera(_viewportHeight, _viewportWidth, xOffset: 10, yOffset: 10, xTileSize: _xTileSize, yTileSize: _yTileSize, numberOfXTiles: _numberOfXTiles, numberOfYTiles: _numberOfYTiles);
+            
+            _levelView = new LevelView(_graphicsDevice, _content, _levelManager, _levelCamera);
             _killedTrooperView = new KilledTrooperView(_levelCamera);
-           
+            _trooperInfoController = new TrooperInfoController( viewportWidth,  viewportHeight,  graphicsDevice,  content, xOffset: 10 +5 + _xTileSize * _numberOfXTiles, yOffset: 10);
         }
 
         public void StartLevel(int levelNumber)
         {
-            _levels[levelNumber -1].Current = true;
-            GetCurrentLevel().Start();
+            _levelManager.StartLevel(levelNumber);
+            _trooperInfoController.Update(null, _levelManager.CurrentLevel);
+
+           
         }
 
         public void StartLevel()
         {
-            GetCurrentLevel().Start();
+            _levelManager.StartLevel();
+            _trooperInfoController.Update(null, _levelManager.CurrentLevel);
         }
 
-        private Level GetCurrentLevel()
-        {
-            return _levels.Find(l => l.Current);
-        }
+        
 
         internal void LoadConent()
         {
             _levelView.LoadContent(_content);
             _killedTrooperView.LoadContent(_content);
+            _trooperInfoController.LoadContent();
         }
 
         internal void Update(GameTime gameTime)
         {
-            foreach (Trooper trooper in GetCurrentLevel().GetDeadTroopers())
-            {
-                _killedTrooperView.Play(trooper.CenterPosition);
-            }
+            PlayDeadTrooperAnimation();
 
-            if (GetCurrentLevel().IsFinished && !_killedTrooperView.IsAlive)
+            if (_levelManager.CurrentLevel.IsFinished && !_killedTrooperView.IsAlive)
             {
                 OnLevelFinished();
                 return;
             }
+
+            if (_killedTrooperView.IsAlive)
+            {
+                _killedTrooperView.Update(gameTime);
+            }
+
+            if (_levelManager.CurrentLevel.IsFinished)
+                return;
+
             
             KeyboardState keyboardState = Keyboard.GetState();
-            if (IsKeyPressed(keyboardState, Keys.Space))
+            if (IsKeyPressed(keyboardState, Keys.Escape) || IsKeyPressed(keyboardState, Keys.P))
             {
                 OnPauseGame();
             }
@@ -106,21 +112,25 @@ namespace Troopers.Controller
             Vector2 mousePosition = new Vector2(newMouseState.X, newMouseState.Y);
             Vector2 logicalMousePosition = _levelCamera.TransformScreenToLogic(mousePosition);
 
-            GetCurrentLevel().Update(gameTime, logicalMousePosition, LeftButtonIsClicked(newMouseState), IsKeyPressed(keyboardState, Keys.Tab));
+            _levelManager.CurrentLevel.Update(gameTime, logicalMousePosition, LeftButtonIsClicked(newMouseState), IsKeyPressed(keyboardState, Keys.Tab));
 
-            if (_killedTrooperView.IsAlive)
-            {
-                _killedTrooperView.Update(gameTime);
-            }
+        
             
 
             UpdateMouseState(newMouseState);
             _oldKeyboardState = keyboardState;
 
-          
+            _trooperInfoController.Update(gameTime, _levelManager.CurrentLevel);
         }
 
-       
+        private void PlayDeadTrooperAnimation()
+        {
+            foreach (Trooper trooper in _levelManager.CurrentLevel.GetDeadTroopers())
+            {
+                _killedTrooperView.Play(trooper.CenterPosition);
+            }
+        }
+
 
         private bool LeftButtonIsClicked(MouseState newMouseState)
         {
@@ -137,30 +147,17 @@ namespace Troopers.Controller
             _levelView.Draw(spriteBatch, gameTime);
             if (_killedTrooperView.IsAlive)
                 _killedTrooperView.Draw(gameTime, spriteBatch);
+
+            _trooperInfoController.Draw(gameTime, spriteBatch);
         }
 
 
         internal void GotoNextLevel()
         {
 
-            for (int i = 0; i < _levels.Count; i++)
-            {
-                if (_levels[i].Current && i < _levels.Count -1)
-                {
-                    _levels[i].Current = false;
-                    _levels[i + 1].Current = true;
-                    return;
-                }
-                else if (_levels[i].Current)
-                {
-                    _levels[i].Current = false;
-                    _levels[0].Current = true;
-                    return;
-                }
-            }
+            _levelManager.GotoNextLevel();
         }
     }
-
-  
-
 }
+
+

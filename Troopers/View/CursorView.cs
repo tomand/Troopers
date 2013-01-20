@@ -48,6 +48,11 @@ namespace Troopers.View
 
         private int GetSourceXValue()
         {
+            if (Cursor.BlockedByBuilding)
+            {
+                return 108;
+            }
+            
             if (Cursor.MarksEnemyTrooper)
             {
                 return 81;

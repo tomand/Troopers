@@ -18,25 +18,26 @@ namespace Troopers.Model
 
         }
 
-        public override void Update(GameTime gameTime, IEnumerable<Trooper> troopers)
+        public override void Update(GameTime gameTime, IEnumerable<Trooper> troopers, IEnumerable<Building> buildings )
         {
             Trooper nearestEnemy = GetNearestEnemy(troopers, Position);
             float nearestEnemySquaredDistance = Vector2.DistanceSquared(nearestEnemy.Position, Position);
-            if (nearestEnemySquaredDistance >= 625f && (_time >= 3 || Position != TargetPosition))
+            if (nearestEnemySquaredDistance >= 625f || TargetPositionIsBlockedOrInsideBuilding(buildings, nearestEnemy.CenterPosition) && (Time >= 3 || Position != TargetPosition))
             {
-                Update(gameTime, GetFaceDirection(GetGotoPosition(troopers, 3f)), GetGotoPosition(troopers, 3f), Position == TargetPosition, false);
+                Vector2 gotoPosition = GetGotoPosition(troopers, buildings, 3f);
+                Update(gameTime, GetFaceDirection(gotoPosition), gotoPosition, Position == TargetPosition, false);
             }
-            else if (_time >= 3 && nearestEnemySquaredDistance < 81f)
+            else if (Time >= 3 && nearestEnemySquaredDistance < 81f)
             {
                 ShootingTarget = nearestEnemy;
                 Update(gameTime, ShootingTarget.CenterPosition, ShootingTarget.Position, true, true);
 
             }
-            else if (_time > 6 || Position != TargetPosition)
+            else if (Time > 6 || Position != TargetPosition)
             {
-                Update(gameTime, GetFaceDirection(GetGotoPosition(troopers)), GetGotoPosition(troopers), Position == TargetPosition, false);    
+                Update(gameTime, GetFaceDirection(GetGotoPosition(troopers, buildings)), GetGotoPosition(troopers, buildings), Position == TargetPosition, false);    
             }
-            else if (_time >= 3)
+            else if (Time >= 3)
             {
                 ShootingTarget = nearestEnemy;
                 Update(gameTime, ShootingTarget.CenterPosition, ShootingTarget.Position, true, true);
@@ -64,11 +65,12 @@ namespace Troopers.Model
             return closestTrooper;
         }
 
-        private Vector2 GetGotoPosition(IEnumerable<Trooper> troopers, float timeToSpend = 6f)
+        private Vector2 GetGotoPosition(IEnumerable<Trooper> troopers,IEnumerable<Building> buildings  , float timeToSpend = 6f)
         {
-            IEnumerable<Vector2> positions = _levelPositions.Where(p => this.GetDistanceSquared(p) == timeToSpend * timeToSpend);
+            IEnumerable<Vector2> positions = _levelPositions.Where(p => TargetPositionIsWithinRightDistance(timeToSpend, p) && !TargetPositionIsBlockedOrInsideBuilding(buildings, GridFunctions.GetCenterPosition(p)));
            
 
+            
             Vector2 bestPosition = new Vector2();
             float squaredDistance = float.MaxValue;
             foreach (var position in positions)
@@ -85,10 +87,36 @@ namespace Troopers.Model
             return bestPosition;
         }
 
+        private bool TargetPositionIsBlockedOrInsideBuilding(IEnumerable<Building> buildings, Vector2 position)
+        {
+            foreach (Building building in buildings)
+            {
+                if (building.IsBetweenPosition(position, CenterPosition))
+                {
+                    return true;
+                }
+
+            }
+            return false;
+        }
+
+        private bool TargetPositionIsWithinRightDistance(float timeToSpend, Vector2 p)
+        {
+            return this.GetDistanceSquared(p) == timeToSpend * timeToSpend;
+        }
+
         private Vector2 GetFaceDirection(Vector2 gotoPosition)
         {
              
             return new Vector2(gotoPosition.X + 0.5f, gotoPosition.Y + 0.5f);
+        }
+    }
+
+    internal static class GridFunctions
+    {
+        public static Vector2 GetCenterPosition(Vector2 position)
+        {
+            return new Vector2(position.X + 0.5f, position.Y + 0.5f);
         }
     }
 }

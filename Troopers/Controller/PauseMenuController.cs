@@ -20,6 +20,7 @@ namespace Troopers.Controller
         public event EventHandler ExitGame;
         public event EventHandler ResumeGame;
         public event EventHandler ShowHelp;
+        public event EventHandler MainMenuActivated;
 
         public PauseMenuController(int viewportWidth, int viewportHeight, GraphicsDevice graphicsDevice, ContentManager content)
         {
@@ -58,11 +59,23 @@ namespace Troopers.Controller
             if (_pauseMenu.SelectedItem.Text == "Restart")
                 OnRestart();
 
+            if (_pauseMenu.SelectedItem.Text == "Main menu")
+                OnMainMenu();
+
             if (_pauseMenu.SelectedItem.Text == "Help")
                 OnShowHelp();
 
             if (_pauseMenu.SelectedItem.Text == "Exit")
                 OnExitGame();
+        }
+
+        private void OnMainMenu()
+        {
+            EventHandler handler = MainMenuActivated;
+            if (handler != null)
+            {
+                handler(this, new EventArgs());
+            }
         }
 
         private void OnRestart()

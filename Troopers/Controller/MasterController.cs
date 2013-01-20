@@ -59,17 +59,26 @@ namespace Troopers.Controller
             _pauseMenuController.RestartGame += StartGame;
             _pauseMenuController.ResumeGame += ResumeGame;
             _pauseMenuController.ShowHelp += (sender, args) => ShowHelp(sender);
+            _pauseMenuController.MainMenuActivated += (sender, args) => ShowMainMenu((ControllerBase) sender);
 
             _gameOverMenuController.ExitGame += (sender, args) => { this.Exit(); };
             _gameOverMenuController.RestartGame += RestartGame;
             _gameOverMenuController.ContinueGame += ContinueGame;
             _gameOverMenuController.ShowHelp += (sender, args) => ShowHelp(sender);
+            _gameOverMenuController.MainMenuActivated += (sender, args) => ShowMainMenu((ControllerBase)sender);
             
             _levelController.PauseGame += (sender, args) => ShowPauseMenu();
             _levelController.LevelFinished += (sender, args) => FinishLevel(args);
 
             _helpController.GoBack += (sender, EventArgs) => GoBackFromHelp();
 
+        }
+
+        private void ShowMainMenu(ControllerBase sender)
+        {
+            sender.IsActive = false;
+            _lastController = sender;
+            _mainMenuController.IsActive = true;
         }
 
         private void GoBackFromHelp()
