@@ -111,6 +111,7 @@
     <Compile Include="Controller\HelpController.cs" />
     <Compile Include="Model\TrooperInfo.cs" />
     <Compile Include="Controller\TrooperInfoController.cs" />
+    <Compile Include="View\TrooperHitView.cs" />
     <Compile Include="View\TrooperInfoView.cs" />
     <Compile Include="Model\Building.cs" />
     <Compile Include="Model\LevelManager.cs" />

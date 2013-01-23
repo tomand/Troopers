@@ -17,6 +17,8 @@ namespace Troopers.View
         private CursorView _cursorView;
         private MediKitView _mediKitView;
         private BuildingView _buildingView;
+        private List<TrooperHitView> _trooperHitViews;
+        private SpriteFont _font;
 
 
         private Level CurrentLevel { get { return _levelManager.CurrentLevel; } }
@@ -29,6 +31,7 @@ namespace Troopers.View
             _cursorView = new CursorView(cam);
             _mediKitView = new MediKitView(cam);
             _buildingView = new BuildingView(cam);
+            _trooperHitViews = new List<TrooperHitView>();
 
         }
 
@@ -54,11 +57,40 @@ namespace Troopers.View
             foreach (Trooper trooper in CurrentLevel.GetTroopers())
             {
                 _trooperView.Draw(spriteBatch, gameTime, trooper);
+                if (trooper.LifeChange < 0)
+                {
+                    AddTrooperHitView(trooper.CenterPosition, trooper.LifeChange, gameTime);
+              //      spriteBatch.DrawString(_font, trooper.LifeChange.ToString(), Camera.Transform(GetDamageTextPosition(trooper.CenterPosition)), Color.Red);
+                    trooper.ResetLifeChange();
+                }
             }
 
-            
+           DrawHits(spriteBatch, gameTime);
 
-            
+        }
+
+        private void AddTrooperHitView(Vector2 centerPosition, int lifeChange, GameTime gameTime)
+        {
+            _trooperHitViews.Add(new TrooperHitView(Camera, lifeChange.ToString(), GetDamageTextPosition(centerPosition), _font, gameTime));
+           
+
+        }
+
+        private Vector2 GetDamageTextPosition(Vector2 centerPosition)
+        {
+            Vector2 position = new Vector2();
+            position.X = centerPosition.X - 0.5f;
+            position.Y = (centerPosition.Y < 1 ? centerPosition.Y + 0.5f : centerPosition.Y - 1.5f);
+            return position;
+        }
+
+        private void DrawHits(SpriteBatch spriteBatch, GameTime gameTime)
+        {
+            _trooperHitViews.RemoveAll(h => !h.IsAlive);
+            foreach (var trooperHitView in _trooperHitViews.Where(h => h.IsAlive))
+            {
+                trooperHitView.Draw(spriteBatch, gameTime);
+            }
         }
 
         private void DrawLevelBackground(SpriteBatch spriteBatch)
@@ -85,6 +117,7 @@ namespace Troopers.View
             _cursorView.LoadContent(content);
             _mediKitView.LoadContent(content);
             _buildingView.LoadContent(content);
+            _font = content.Load<SpriteFont>("TrooperInfoFont");
         }
     }
 }

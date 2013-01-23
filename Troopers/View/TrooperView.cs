@@ -13,11 +13,14 @@ namespace Troopers.View
     {
         private Texture2D _tileMark;
         private BulletView _bulletView;
+        private SpriteFont _font;
+       
 
         public TrooperView(Camera cam)
             : base(cam)
         {
             _bulletView = new BulletView(cam);
+           
         }
 
         internal void Draw(SpriteBatch spriteBatch, GameTime gameTime, Trooper trooper)
@@ -27,18 +30,22 @@ namespace Troopers.View
                     , Camera.TransformSizeX(trooper.Width)
                     , Camera.TransformSizeY(trooper.Height));
            
-         //   spriteBatch.Draw(GameObjectTexture, new Vector2(Camera.TransformX(trooper.Position.X), Camera.TransformY(trooper.Position.Y)), null, Color.White, trooper.FaceDirection, origin: 
-            //Camera.Transform(new Vector2(trooper.Width / 2,trooper.Height / 2)), effects: SpriteEffects.None, layerDepth: 0);
+         //   spriteBatch.Draw(GameObjectTexture, new Vector2(camera.TransformX(trooper.Position.X), camera.TransformY(trooper.Position.Y)), null, Color.White, trooper.FaceDirection, origin: 
+            //camera.Transform(new Vector2(trooper.Width / 2,trooper.Height / 2)), effects: SpriteEffects.None, layerDepth: 0);
         //    spriteBatch.Draw(GameObjectTexture, DestinationRectangle, Color.White);
 
-            DrawTrooper(spriteBatch, trooper);
+            DrawTrooper(spriteBatch, trooper, gameTime);
             DrawBullets(spriteBatch, trooper);
 
             if (trooper.Current)
             {
                 DrawTileMark(spriteBatch, trooper);
             }
+
+           
         }
+
+       
 
         private void DrawBullets(SpriteBatch spriteBatch, Trooper trooper)
         {
@@ -49,7 +56,7 @@ namespace Troopers.View
            
         }
 
-        private void DrawTrooper(SpriteBatch spriteBatch, Trooper trooper)
+        private void DrawTrooper(SpriteBatch spriteBatch, Trooper trooper, GameTime gameTime)
         {
             Vector2 origin = new Vector2(Camera.TransformSizeX(trooper.Width/2), Camera.TransformSizeY(trooper.Height/2));
 
@@ -58,6 +65,8 @@ namespace Troopers.View
             spriteBatch.Draw(GameObjectTexture, new Rectangle(x, y, DestinationRectangle.Width, DestinationRectangle.Height),
                              GetTrooperSpriteSourceRectangle(trooper), Color.White, trooper.FaceDirection, origin,
                              SpriteEffects.None, 0);
+
+           
 
             // left side - health
             var sourceRectangle = new Rectangle(0, 0, 2, _tileMark.Height);
@@ -72,6 +81,10 @@ namespace Troopers.View
                                                         Convert.ToInt32(DestinationRectangle.Height * trooper.HealthPercent));
             spriteBatch.Draw(_tileMark, rightDesinationRectangle, sourceRectangle, Color.White);
         }
+
+
+
+        
 
         private void DrawTileMark(SpriteBatch spriteBatch, Trooper trooper)
         {
@@ -94,6 +107,7 @@ namespace Troopers.View
             GameObjectTexture = content.Load<Texture2D>("trooper");
             _tileMark = content.Load<Texture2D>("tilemark");
             _bulletView.LoadContent(content);
+            
         }
     }
 }

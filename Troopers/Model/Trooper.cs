@@ -15,6 +15,8 @@ namespace Troopers.Model
         protected bool _isControlledByComputer = false;
         private Weapon _weapon;
         private int _initialHealth;
+        private int _lastHealth;
+        protected float _timeSinceLastAction = 1;
 
         public Vector2 Position
         {
@@ -31,6 +33,7 @@ namespace Troopers.Model
         public int Speed { get; set; }
         public Trooper ShootingTarget { get; set; }
         public bool IsAlive { get { return Health > 0; } }
+        public int LifeChange { get { return Health - _lastHealth; } }
 
         public bool Current
         {
@@ -77,10 +80,11 @@ namespace Troopers.Model
                 Time = Time - (int)Math.Ceiling( Math.Sqrt(GetDistanceSquared(cursorPosition)));
             }
 
-            if (enemyIsMarked && mouseClicked && Time >= _weapon.TimeToShoot)
+            if (enemyIsMarked && mouseClicked && Time >= _weapon.TimeToShoot && _timeSinceLastAction > 0.5f)
             {
                 FacePosition(cursorCenterPosition);
                 Shoot();
+                
             }
 
             if (!TargetIsReached())
@@ -93,7 +97,8 @@ namespace Troopers.Model
             }
 
             Weapon.Update(gameTime);
-         
+            _lastHealth = Health;
+
         }
 
         
@@ -185,12 +190,19 @@ namespace Troopers.Model
 
         public void Hit(int damage)
         {
+            _lastHealth = Health;
             Health = Health - damage;
         }
 
         public void Heal()
         {
+            _lastHealth = Health;
             Health = Math.Min(Health + (_initialHealth / 2), _initialHealth);
+        }
+
+        public void ResetLifeChange()
+        {
+            _lastHealth = Health;
         }
     }
 }

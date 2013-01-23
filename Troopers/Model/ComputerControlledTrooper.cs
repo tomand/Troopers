@@ -20,6 +20,9 @@ namespace Troopers.Model
 
         public override void Update(GameTime gameTime, IEnumerable<Trooper> troopers, IEnumerable<Building> buildings )
         {
+            _timeSinceLastAction += (float) gameTime.ElapsedGameTime.TotalSeconds;
+           
+
             Trooper nearestEnemy = GetNearestEnemy(troopers, Position);
             float nearestEnemySquaredDistance = Vector2.DistanceSquared(nearestEnemy.Position, Position);
             if (nearestEnemySquaredDistance >= 625f || TargetPositionIsBlockedOrInsideBuilding(buildings, nearestEnemy.CenterPosition) && (Time >= 3 || Position != TargetPosition))
@@ -29,6 +32,7 @@ namespace Troopers.Model
             }
             else if (Time >= 3 && nearestEnemySquaredDistance < 81f)
             {
+              
                 ShootingTarget = nearestEnemy;
                 Update(gameTime, ShootingTarget.CenterPosition, ShootingTarget.Position, true, true);
 
@@ -39,6 +43,7 @@ namespace Troopers.Model
             }
             else if (Time >= 3)
             {
+             
                 ShootingTarget = nearestEnemy;
                 Update(gameTime, ShootingTarget.CenterPosition, ShootingTarget.Position, true, true);
             }
@@ -46,6 +51,11 @@ namespace Troopers.Model
             {
                 Update(gameTime, ShootingTarget.CenterPosition, ShootingTarget.Position,false,false);
             }
+            if (_timeSinceLastAction > 0.5f)
+            {
+                _timeSinceLastAction = 0f;
+            }
+           
             
         }
 
