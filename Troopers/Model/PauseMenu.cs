@@ -18,7 +18,7 @@ namespace Troopers.Model
             _menuItems.Add(new MenuItem("Main menu", false));
             _menuItems.Add(new MenuItem("Help", false));
             _menuItems.Add(new MenuItem("Exit", false));
-            Height = height * (_menuItems.Count + 1);
+            Height = height * (_menuItems.Count + 2);
         }
 
        

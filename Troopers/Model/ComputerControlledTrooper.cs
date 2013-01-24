@@ -10,8 +10,8 @@ namespace Troopers.Model
     {
         private List<Vector2> _levelPositions;
 
-        public ComputerControlledTrooper(Vector2 startPosition, float faceDirection, float width, float height, int speed, List<Vector2> levelPositions )
-        : base(startPosition, faceDirection, width, height, speed)
+        public ComputerControlledTrooper(Vector2 startPosition, float faceDirection, float width, float height, int speed, List<Vector2> levelPositions, int health = 30 )
+        : base(startPosition, faceDirection, width, height, speed, health)
         {
             _isControlledByComputer = true;
             _levelPositions = levelPositions;
@@ -21,7 +21,7 @@ namespace Troopers.Model
         public override void Update(GameTime gameTime, IEnumerable<Trooper> troopers, IEnumerable<Building> buildings )
         {
             _timeSinceLastAction += (float) gameTime.ElapsedGameTime.TotalSeconds;
-           
+            NumberOfBullets = 20;
 
             Trooper nearestEnemy = GetNearestEnemy(troopers, Position);
             float nearestEnemySquaredDistance = Vector2.DistanceSquared(nearestEnemy.Position, Position);

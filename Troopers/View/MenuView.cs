@@ -13,6 +13,7 @@ namespace Troopers.View
     {
         private BaseMenu _menu;
         private SpriteFont font;
+        private SpriteFont _helpFont;
 
         public MenuView(GraphicsDevice graphicsDevice, ContentManager content, BaseMenu menu, Camera cam)
             : base(cam)
@@ -25,6 +26,8 @@ namespace Troopers.View
             float positionY = _menu.Position.Y;
             float positionYIncrement =  _menu.Height / ((float)_menu.GetMenuItems().Count() + 1);
             spriteBatch.DrawString(font, _menu.Header, Camera.Transform(_menu.Position), Color.Orange);
+            positionY += positionYIncrement;
+            spriteBatch.DrawString(_helpFont, _menu.Help, Camera.Transform(new Vector2(_menu.Position.X, positionY)), Color.Gray);
             positionY += positionYIncrement;
             foreach (MenuItem menuItem in _menu.GetMenuItems())
             {
@@ -52,6 +55,7 @@ namespace Troopers.View
         public void LoadContent(ContentManager content)
         {
             font = content.Load<SpriteFont>("MenuFont");
+            _helpFont = content.Load<SpriteFont>("HelpFont");
             GameObjectTexture = content.Load<Texture2D>("tilemark");
         }
     }

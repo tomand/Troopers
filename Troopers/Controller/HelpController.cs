@@ -32,8 +32,9 @@ namespace Troopers.Controller
         public void Update(GameTime gameTime)
         {
             KeyboardState keyboardState = Keyboard.GetState();
+            MouseState mouseState = Mouse.GetState();
 
-            if (IsKeyPressed(keyboardState, Keys.Back))
+            if (IsKeyPressed(keyboardState, Keys.Back) || IsMouseLeftClicked(mouseState))
                 OnGoBack();
             
             _oldKeyboardState = keyboardState;

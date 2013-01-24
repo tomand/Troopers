@@ -109,10 +109,12 @@
   <ItemGroup>
     <Compile Include="Controller\ControllerBase.cs" />
     <Compile Include="Controller\HelpController.cs" />
-    <Compile Include="Model\TrooperInfo.cs" />
-    <Compile Include="Controller\TrooperInfoController.cs" />
+    <Compile Include="Model\Ammo.cs" />
+    <Compile Include="Model\Info.cs" />
+    <Compile Include="Controller\InfoController.cs" />
+    <Compile Include="View\AmmoView.cs" />
     <Compile Include="View\TrooperHitView.cs" />
-    <Compile Include="View\TrooperInfoView.cs" />
+    <Compile Include="View\InfoView.cs" />
     <Compile Include="Model\Building.cs" />
     <Compile Include="Model\LevelManager.cs" />
     <Compile Include="Model\Dice.cs" />

@@ -16,7 +16,7 @@ namespace Troopers.Model
         public Weapon()
         {
             TimeToShoot = 3;
-            _damage = 10;
+            _damage = 11;
             _maxDistanceSquared = 900;
             _bullets = new List<Bullet>();
         }

@@ -23,6 +23,10 @@ namespace Troopers.Model
 
         internal void StartLevel(int levelNumber)
         {
+            foreach (var level in _levels)
+            {
+                level.Current = false;
+            }
             _levels[levelNumber - 1].Current = true;
             StartLevel();
         }

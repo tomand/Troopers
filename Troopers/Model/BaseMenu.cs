@@ -10,8 +10,14 @@ namespace Troopers.Model
     {
         protected Vector2 _position;
         protected List<MenuItem> _menuItems;
+        public string Help { get; set; }
         public float Height { get; set; }
         public string Header { get; set; }
+
+        public BaseMenu()
+        {
+            Help = string.Format("To navigate in the menus, use the up and down arrow keys or the mouse wheel.{0}Left click with the mouse or hit Enter to select a menu option.", Environment.NewLine);
+        }
 
         public Vector2 Position
         {

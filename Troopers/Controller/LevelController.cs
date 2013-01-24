@@ -35,7 +35,7 @@ namespace Troopers.Controller
         private int _currentLevel;
         private KilledTrooperView _killedTrooperView;
         private LevelManager _levelManager;
-        private TrooperInfoController _trooperInfoController;
+        private InfoController _trooperInfoController;
 
 
         protected virtual void OnLevelFinished()
@@ -57,7 +57,7 @@ namespace Troopers.Controller
             
             _levelView = new LevelView(_graphicsDevice, _content, _levelManager, _levelCamera);
             _killedTrooperView = new KilledTrooperView(_levelCamera);
-            _trooperInfoController = new TrooperInfoController( viewportWidth,  viewportHeight,  graphicsDevice,  content, xOffset: 10 +5 + _xTileSize * _numberOfXTiles, yOffset: 10);
+            _trooperInfoController = new InfoController( viewportWidth,  viewportHeight,  graphicsDevice,  content, xOffset: 10 +5 + _xTileSize * _numberOfXTiles, yOffset: 10);
         }
 
         public void StartLevel(int levelNumber)

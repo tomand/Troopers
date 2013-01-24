@@ -11,8 +11,7 @@ namespace Troopers.View
 {
     class MediKitView : GameObjectView
     {
-        private Texture2D _tileMark;
-        private BulletView _bulletView;
+
 
         public MediKitView(Camera cam)
             : base(cam)

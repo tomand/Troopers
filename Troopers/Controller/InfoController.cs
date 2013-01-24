@@ -6,23 +6,23 @@ using Troopers.View;
 
 namespace Troopers.Controller
 {
-    internal class TrooperInfoController :ControllerBase
+    internal class InfoController :ControllerBase
     {
-        private TrooperInfo _trooperInfo;
-        private TrooperInfoView _trooperInfoView;
+        private Info _trooperInfo;
+        private InfoView _trooperInfoView;
         private Level _currentLevel;
         private Trooper _currentTrooper;
 
-        public TrooperInfoController(int viewportWidth, int viewportHeight, GraphicsDevice graphicsDevice, ContentManager content, int xOffset, int yOffset)
+        public InfoController(int viewportWidth, int viewportHeight, GraphicsDevice graphicsDevice, ContentManager content, int xOffset, int yOffset)
         {
             _viewportWidth = viewportWidth;
             _viewportHeight = viewportHeight;
             _graphicsDevice = graphicsDevice;
             _content = content;
         
-            _trooperInfo = new Model.TrooperInfo(new Vector2(0,1));
+            _trooperInfo = new Model.Info(new Vector2(0,1));
 
-            _trooperInfoView = new View.TrooperInfoView(new Camera(viewportWidth, viewportHeight, xOffset,yOffset, 180, 30, 1, 20 ), _trooperInfo);
+            _trooperInfoView = new View.InfoView(new Camera(viewportWidth, viewportHeight, xOffset,yOffset, 180, 30, 1, 20 ), _trooperInfo);
         }
 
 

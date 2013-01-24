@@ -15,11 +15,22 @@ namespace Troopers.Controller
         protected GraphicsDevice _graphicsDevice;
         protected ContentManager _content;
         protected KeyboardState _oldKeyboardState;
+        protected MouseState _oldMouseState;
         public bool IsActive { get; set; }
 
         protected bool IsKeyPressed(KeyboardState keyboardState, Keys key)
         {
             return keyboardState.IsKeyUp(key) && _oldKeyboardState.IsKeyDown(key);
+        }
+
+        protected bool IsMouseLeftClicked(MouseState mouseState)
+        {
+            return (mouseState.LeftButton == ButtonState.Pressed && _oldMouseState.LeftButton != ButtonState.Pressed);
+        }
+
+        private bool IsMouseRightClicked(MouseState mouseState)
+        {
+            return (mouseState.RightButton == ButtonState.Pressed && _oldMouseState.RightButton != ButtonState.Pressed);
         }
     }
 }

@@ -19,6 +19,7 @@ namespace Troopers.View
         private BuildingView _buildingView;
         private List<TrooperHitView> _trooperHitViews;
         private SpriteFont _font;
+        private AmmoView _ammoView;
 
 
         private Level CurrentLevel { get { return _levelManager.CurrentLevel; } }
@@ -32,6 +33,7 @@ namespace Troopers.View
             _mediKitView = new MediKitView(cam);
             _buildingView = new BuildingView(cam);
             _trooperHitViews = new List<TrooperHitView>();
+            _ammoView = new AmmoView(cam);
 
         }
 
@@ -52,6 +54,11 @@ namespace Troopers.View
             foreach (var mediKit in CurrentLevel.GetMediKits())
             {
                 _mediKitView.Draw(spriteBatch, gameTime, mediKit);
+            }
+
+            foreach (var ammo in CurrentLevel.GetAmmoClips())
+            {
+                _ammoView.Draw(spriteBatch, gameTime, ammo);
             }
 
             foreach (Trooper trooper in CurrentLevel.GetTroopers())
@@ -117,6 +124,7 @@ namespace Troopers.View
             _cursorView.LoadContent(content);
             _mediKitView.LoadContent(content);
             _buildingView.LoadContent(content);
+            _ammoView.LoadContent(content);
             _font = content.Load<SpriteFont>("TrooperInfoFont");
         }
     }

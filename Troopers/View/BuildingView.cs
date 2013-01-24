@@ -29,7 +29,7 @@ namespace Troopers.View
 
         internal void LoadContent(ContentManager content)
         {
-            GameObjectTexture = content.Load<Texture2D>("medikit");
+            GameObjectTexture = content.Load<Texture2D>("black");
 
         }
     }

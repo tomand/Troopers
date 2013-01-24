@@ -28,7 +28,7 @@ namespace Troopers.Controller
             _viewportHeight = viewportHeight;
             _graphicsDevice = graphicsDevice;
             _content = content;
-            _pauseMenu = new PauseMenu(new Vector2(0.1f, 0.1f), 0.12f);
+            _pauseMenu = new PauseMenu(new Vector2(0.1f, 0.1f), 0.07f);
             _pauseMenuView = new MenuView(_graphicsDevice, _content, _pauseMenu, GetCamera());
         }
 
@@ -40,15 +40,18 @@ namespace Troopers.Controller
         public void Update(GameTime gameTime)
         {
             KeyboardState keyboardState = Keyboard.GetState();
+            MouseState mouseState = Mouse.GetState();
 
-            if (IsKeyPressed(keyboardState, Keys.Enter))
+            if (IsKeyPressed(keyboardState, Keys.Enter) || IsMouseLeftClicked(mouseState))
                 HandleEnterKeyPress();
             else
             {
-                _pauseMenu.Update(gameTime, GetMenuNavigation(keyboardState));  
+                _pauseMenu.Update(gameTime, GetMenuNavigation(keyboardState, mouseState.ScrollWheelValue));  
             }
             
             _oldKeyboardState = keyboardState;
+            _oldMouseState = mouseState;
+
         }
 
         private void HandleEnterKeyPress()
@@ -123,12 +126,12 @@ namespace Troopers.Controller
             }
         }
 
-        private MenuNavigation GetMenuNavigation(KeyboardState keyboardState)
+        private MenuNavigation GetMenuNavigation(KeyboardState keyboardState, int scrollWheelValue)
         {
-            if ( IsKeyPressed(keyboardState, Keys.Down)) 
+            if (IsKeyPressed(keyboardState, Keys.Down) || scrollWheelValue < _oldMouseState.ScrollWheelValue)
                 return MenuNavigation.Next;
 
-            if (IsKeyPressed(keyboardState, Keys.Up))
+            if (IsKeyPressed(keyboardState, Keys.Up) || scrollWheelValue > _oldMouseState.ScrollWheelValue)
                 return MenuNavigation.Previous;
 
             return MenuNavigation.None;

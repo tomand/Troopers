@@ -17,6 +17,7 @@ namespace Troopers.Model
         private int _initialHealth;
         private int _lastHealth;
         protected float _timeSinceLastAction = 1;
+        public int NumberOfBullets { get; protected set; }
 
         public Vector2 Position
         {
@@ -51,7 +52,7 @@ namespace Troopers.Model
         }
 
 
-        public Trooper(Vector2 startPosition,float faceDirection ,float width, float height, int speed, int health = 40)
+        public Trooper(Vector2 startPosition,float faceDirection ,float width, float height, int speed, int health = 30)
         {
             Position = startPosition;
             TargetPosition = startPosition;
@@ -62,6 +63,7 @@ namespace Troopers.Model
             Health = health;
             _initialHealth = Health;
             Weapon = new Weapon();
+            NumberOfBullets = 20;
             InitiateNewTurn();
         }
 
@@ -80,7 +82,7 @@ namespace Troopers.Model
                 Time = Time - (int)Math.Ceiling( Math.Sqrt(GetDistanceSquared(cursorPosition)));
             }
 
-            if (enemyIsMarked && mouseClicked && Time >= _weapon.TimeToShoot && _timeSinceLastAction > 0.5f)
+            if (enemyIsMarked && mouseClicked && Time >= _weapon.TimeToShoot && _timeSinceLastAction > 0.5f && NumberOfBullets > 0)
             {
                 FacePosition(cursorCenterPosition);
                 Shoot();
@@ -105,6 +107,7 @@ namespace Troopers.Model
         private void Shoot()
         {
             Time = Time - Weapon.TimeToShoot;
+            NumberOfBullets--;
             Weapon.Fire(FaceDirection, CenterPosition, ShootingTarget);
 
         }
@@ -198,6 +201,11 @@ namespace Troopers.Model
         {
             _lastHealth = Health;
             Health = Math.Min(Health + (_initialHealth / 2), _initialHealth);
+        }
+
+        public void AddAmmo(int numberOfBullets)
+        {
+            NumberOfBullets += numberOfBullets;
         }
 
         public void ResetLifeChange()

@@ -5,14 +5,14 @@ using Troopers.Model;
 
 namespace Troopers.View
 {
-    internal class TrooperInfoView : GameObjectView
+    internal class InfoView : GameObjectView
     {
         private Camera camera;
-        private Model.TrooperInfo _trooperInfo;
+        private Model.Info _trooperInfo;
         private SpriteFont _font
 ;
 
-        public TrooperInfoView(Camera camera, TrooperInfo _trooperInfo)
+        public InfoView(Camera camera, Info _trooperInfo)
         :base(camera)
         {
           

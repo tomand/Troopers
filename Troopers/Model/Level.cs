@@ -23,13 +23,8 @@ namespace Troopers.Model
             get { return _height; }
             set { _height = value; }
         }
-        private Vector2 _position;
 
-        public Vector2 Position
-        {
-            get { return _position; }
-            set { _position = value; }
-        }
+        public Vector2 Position { get; set; }
 
         public Cursor Cursor
         {
@@ -55,11 +50,12 @@ namespace Troopers.Model
         private string _levelId;
         private List<MediKit> _mediKits;
         private List<Building> _buildings;
+        private List<Ammo> _ammoClips;
 
         public Level(int width, int height, Vector2 position, string levelId)
         {
             _random = new Random();
-            _position = position;
+            Position = position;
             _width = width;
             _height = height;
             _cursor = new Cursor(new Vector2(0, 0), 1f);
@@ -88,20 +84,11 @@ namespace Troopers.Model
           //  _cursor.BlockedByBuilding =  buildingIsBetweenCursorAndCurrentTrooper;
             if (trooper.IsControlledByComputer)
             {
-                trooper.Update(gameTime, GetPlayerControlledTroopers(), GetBuildings());
+                trooper.Update(gameTime, _troopers.Where(t => t.IsAlive), GetBuildings());
             }
             else
             {
-                trooper.Update(gameTime, _cursor.CenterPosition, _cursor.Position, !_cursor.BlockedByBuilding && !buildingIsBetweenCursorAndCurrentTrooper && mouseClicked && GetPlayerControlledTroopers().Count(t => t.Position.Equals(_cursor.Position)) == 0, _cursor.MarksEnemyTrooper && !buildingIsBetweenCursorAndCurrentTrooper);
-                if (_cursor.MarksEnemyTrooper)
-                {
-                    trooper.ShootingTarget = GetTrooperOnPosition(_cursor.Position);
-                }
-                if (_mediKits.Count(m => m.Position.Equals(trooper.Position) && !m.IsTaken) > 0)
-                {
-                    _mediKits.Find(m => m.Position.Equals(trooper.Position)).IsTaken = true;
-                    trooper.Heal();
-                }
+                UpdatePlayerControlledTrooper(gameTime, mouseClicked, trooper, buildingIsBetweenCursorAndCurrentTrooper);
             }
             
 
@@ -109,6 +96,50 @@ namespace Troopers.Model
 
             if (trooper.HasNoTimeLeft) 
                 UpdateWhoIsCurrent(trooper);
+        }
+
+        private void UpdatePlayerControlledTrooper(GameTime gameTime, bool mouseClicked, Trooper trooper,
+                                                   bool buildingIsBetweenCursorAndCurrentTrooper)
+        {
+            trooper.Update(gameTime, _cursor.CenterPosition, _cursor.Position,
+                           !_cursor.BlockedByBuilding && !buildingIsBetweenCursorAndCurrentTrooper && mouseClicked &&
+                           GetPlayerControlledTroopers().Count(t => t.Position.Equals(_cursor.Position)) == 0,
+                           _cursor.MarksEnemyTrooper && !buildingIsBetweenCursorAndCurrentTrooper);
+            if (_cursor.MarksEnemyTrooper)
+            {
+                trooper.ShootingTarget = GetTrooperOnPosition(_cursor.Position);
+            }
+
+            CheckForMedikits(trooper);
+
+            CheckForAmmo(trooper);
+        }
+
+        private void CheckForMedikits(Trooper trooper)
+        {
+            if (_mediKits.Count(m => m.Position.Equals(trooper.Position) && !m.IsTaken) > 0)
+            {
+                _mediKits.Find(m => m.Position.Equals(trooper.Position)).IsTaken = true;
+                trooper.Heal();
+            }
+        }
+
+        private void CheckForAmmo(Trooper trooper)
+        {
+            if (_ammoClips.Count(a => a.Position.Equals(trooper.Position) && !a.IsTaken) > 0)
+            {
+                var ammoClip = _ammoClips.Find(a => a.Position.Equals(trooper.Position));
+                ammoClip.IsTaken = true;
+                trooper.AddAmmo(ammoClip.NumberOfBullets);
+
+                if (_ammoClips.Count(a => !a.IsTaken) == 0)
+                {
+                    foreach (var ammo in _ammoClips.Where(a => !a.Position.Equals(trooper.Position)))
+                    {
+                        ammo.IsTaken = false;
+                    }
+                }
+            }
         }
 
         private bool IsBuildingBetweenCursorAndCurrentTrooper()
@@ -179,6 +210,7 @@ namespace Troopers.Model
         {
            _troopers = new List<Trooper>();
             _mediKits = new List<MediKit>();
+            _ammoClips = new List<Ammo>();
             _buildings = new List<Building>();
             LoadLevelData();
 
@@ -193,35 +225,62 @@ namespace Troopers.Model
                     {
                         _troopers.Add(new Trooper(new Vector2(1f, 28f), 90f, 1f, 1f, _random.Next(100, 200)));
                         _troopers.Add(GetComputerControlledTrooper(new Vector2(28f, 1f), 90f, 1f, 1f, _random.Next(100, 200)));
-                        _buildings.Add(new Building(new Vector2(15, 15), 3f, 3f));
+                        _buildings.Add(new Building(new Vector2(3, 15), 6f, 3f));
+                        _buildings.Add(new Building(new Vector2(12, 15), 6f, 3f));
+                        _buildings.Add(new Building(new Vector2(20, 15), 6f, 3f));
                         break;
                     }
                 case "level2":
                     {
 
                         _troopers.Add(new Trooper(new Vector2(1f, 28f), 90f, 1f, 1f, _random.Next(100, 200)));
-                        _troopers.Add(new Trooper(new Vector2(9f, 20f), 90f, 1f, 1f, _random.Next(100, 200)));
+                        _troopers.Add(new Trooper(new Vector2(9f, 28f), 90f, 1f, 1f, _random.Next(100, 200)));
                         _troopers.Add(new Trooper(new Vector2(1f, 20f), 90f, 1f, 1f, _random.Next(100, 200)));
                         _troopers.Add(GetComputerControlledTrooper(new Vector2(28f, 1f), 90f, 1f, 1f, _random.Next(100, 200)));
                         _troopers.Add(GetComputerControlledTrooper(new Vector2(20f, 1f), 90f, 1f, 1f, _random.Next(100, 200)));
                         _troopers.Add(GetComputerControlledTrooper(new Vector2(28f, 9f), 90f, 1f, 1f, _random.Next(100, 200)));
-                        
+                        _buildings.Add(new Building(new Vector2(3, 20), 7f, 7f));
+                        _buildings.Add(new Building(new Vector2(12, 12), 6f, 6f));
+                        _buildings.Add(new Building(new Vector2(20, 3), 7f, 7f));
+                        _buildings.Add(new Building(new Vector2(3, 3), 7f, 7f));
+                        _buildings.Add(new Building(new Vector2(20, 20), 7f, 7f));
+                        _ammoClips.Add(new Ammo(new Vector2(11f, 11f)));
+                        _ammoClips.Add(new Ammo(new Vector2(18f, 18f)));
+                        _ammoClips.Add(new Ammo(new Vector2(11f, 18f)));
+                        _ammoClips.Add(new Ammo(new Vector2(18f, 11f)));
                         break;
                     }
                 case "level3":
                     {
-                        _troopers.Add(new Trooper(new Vector2(1f, 28f), 90f, 1f, 1f, _random.Next(100, 200), 80));
-                        _troopers.Add(GetComputerControlledTrooper(new Vector2(28f, 1f), 90f, 1f, 1f, _random.Next(100, 200)));
-                        _troopers.Add(GetComputerControlledTrooper(new Vector2(20f, 1f), 90f, 1f, 1f, _random.Next(100, 200)));
-                        _troopers.Add(GetComputerControlledTrooper(new Vector2(28f, 9f), 90f, 1f, 1f, _random.Next(100, 200)));
-                        _mediKits.Add(new MediKit(new Vector2(5f, 20f)));
-                        _mediKits.Add(new MediKit(new Vector2(7f, 23f)));
-                        _mediKits.Add(new MediKit(new Vector2(19f, 12f)));
-                        _mediKits.Add(new MediKit(new Vector2(10f, 10f)));
-                        _mediKits.Add(new MediKit(new Vector2(20f, 5f)));
-                        _mediKits.Add(new MediKit(new Vector2(15f, 25f)));
-                        _mediKits.Add(new MediKit(new Vector2(18f, 27f)));
-                        _mediKits.Add(new MediKit(new Vector2(15f, 15f)));
+                        _troopers.Add(new Trooper(new Vector2(9f, 26f), 90f, 1f, 1f, _random.Next(100, 200), 80));
+                        _troopers.Add(GetComputerControlledTrooper(new Vector2(28f, 1f), 90f, 1f, 1f, _random.Next(100, 200),50));
+                        _troopers.Add(GetComputerControlledTrooper(new Vector2(22f, 1f), 90f, 1f, 1f, _random.Next(100, 200), 50));
+                        _troopers.Add(GetComputerControlledTrooper(new Vector2(28f, 7f), 90f, 1f, 1f, _random.Next(100, 200), 50));
+                        _mediKits.Add(new MediKit(new Vector2(10f, 3f)));
+                        _mediKits.Add(new MediKit(new Vector2(10f, 6f)));
+                        _mediKits.Add(new MediKit(new Vector2(10f, 9f)));
+                        _mediKits.Add(new MediKit(new Vector2(10f, 12f)));
+                        _mediKits.Add(new MediKit(new Vector2(10f, 22f)));
+                        _mediKits.Add(new MediKit(new Vector2(11f, 22f)));
+                        _mediKits.Add(new MediKit(new Vector2(14f, 16f)));
+                        _mediKits.Add(new MediKit(new Vector2(15f, 17f)));
+                        _mediKits.Add(new MediKit(new Vector2(19f, 20f)));
+                        _mediKits.Add(new MediKit(new Vector2(22f, 20f)));
+                        _mediKits.Add(new MediKit(new Vector2(25f, 20f)));
+                        _ammoClips.Add(new Ammo(new Vector2(7f, 3f)));
+                        _ammoClips.Add(new Ammo(new Vector2(7f, 12f)));
+                        _ammoClips.Add(new Ammo(new Vector2(6f, 22f)));
+                        _ammoClips.Add(new Ammo(new Vector2(7f, 22f)));
+                        _ammoClips.Add(new Ammo(new Vector2(19f, 23f)));
+                        _ammoClips.Add(new Ammo(new Vector2(25f, 23f)));
+                        _ammoClips.Add(new Ammo(new Vector2(15f, 16f)));
+                        _ammoClips.Add(new Ammo(new Vector2(14f, 17f)));
+
+                        _buildings.Add(new Building(new Vector2(2, 21), 3f, 6f));
+                        _buildings.Add(new Building(new Vector2(5, 18), 8f, 3f));
+                        _buildings.Add(new Building(new Vector2(13, 21), 2f, 6f));
+                        _buildings.Add(new Building(new Vector2(13, 2), 2f, 13f));
+                        _buildings.Add(new Building(new Vector2(17, 15), 11f, 3f));
                         
                         break;
                     }
@@ -229,9 +288,9 @@ namespace Troopers.Model
             
         }
 
-        private ComputerControlledTrooper GetComputerControlledTrooper(Vector2 startPosition, float faceDirection, float width, float height, int speed)
+        private ComputerControlledTrooper GetComputerControlledTrooper(Vector2 startPosition, float faceDirection, float width, float height, int speed, int health = 30)
         {
-            return new ComputerControlledTrooper(startPosition, faceDirection, width, height, speed, GetAllPositions());
+            return new ComputerControlledTrooper(startPosition, faceDirection, width, height, speed, GetAllPositions(), health);
         }
 
         private List<Vector2> GetAllPositions()
@@ -262,6 +321,11 @@ namespace Troopers.Model
         public IEnumerable<Building> GetBuildings()
         {
             return _buildings;
+        }
+
+        public IEnumerable<Ammo> GetAmmoClips()
+        {
+            return _ammoClips.Where(a => !a.IsTaken);
         }
     }
 }

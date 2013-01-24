@@ -38,7 +38,7 @@ namespace Troopers.Model
 
         private void CalculateHeight()
         {
-            Height = _rowHeight * (_menuItems.Count(m => m.Visible) + 1);
+            Height = _rowHeight * (_menuItems.Count(m => m.Visible) + 2);
         }
 
         public GameOverMenu(Vector2 position, float height)
