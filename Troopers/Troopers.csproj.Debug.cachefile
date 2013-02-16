@@ -2,11 +2,11 @@ Content\trooper.xnb
 Content\ground.xnb
 Content\testcross.xnb
 Content\tilemark.xnb
-Content\MenuFont.xnb
 Content\black.xnb
-Content\HelpFont.xnb
 Content\medikit.xnb
-Content\fire.xnb
 Content\blood.xnb
-Content\TrooperInfoFont.xnb
 Content\ammoclip.xnb
+Content\MenuFont.xnb
+Content\HelpFont.xnb
+Content\TrooperInfoFont.xnb
+Content\fire.xnb
