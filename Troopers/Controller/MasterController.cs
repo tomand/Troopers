@@ -14,7 +14,7 @@ namespace Troopers.Controller
     /// <summary>
     /// This is the main type for your game
     /// </summary>
-    public class MasterController : Microsoft.Xna.Framework.Game
+    public class MasterController : Game
     {
         GraphicsDeviceManager _graphics;
         SpriteBatch _spriteBatch;

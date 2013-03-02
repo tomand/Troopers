@@ -13,6 +13,7 @@ namespace Troopers.View
     {
         private Texture2D _tileMark;
         private BulletView _bulletView;
+        private MovementView _movementView;
         private SpriteFont _font;
        
 
@@ -20,10 +21,11 @@ namespace Troopers.View
             : base(cam)
         {
             _bulletView = new BulletView(cam);
+            _movementView = new MovementView(cam);
            
         }
 
-        internal void Draw(SpriteBatch spriteBatch, GameTime gameTime, Trooper trooper)
+        internal void Draw(SpriteBatch spriteBatch, GameTime gameTime, Trooper trooper,  List<Vector2> levelPositions)
         {
             DestinationRectangle = new Rectangle(Camera.TransformX(trooper.Position.X),
                     Camera.TransformY(trooper.Position.Y)
@@ -40,6 +42,8 @@ namespace Troopers.View
             if (trooper.Current)
             {
                 DrawTileMark(spriteBatch, trooper);
+                if(!trooper.IsControlledByComputer && !trooper.IsMoving)
+                    _movementView.Draw(spriteBatch, trooper, levelPositions);
             }
 
            
@@ -107,6 +111,7 @@ namespace Troopers.View
             GameObjectTexture = content.Load<Texture2D>("trooper");
             _tileMark = content.Load<Texture2D>("tilemark");
             _bulletView.LoadContent(content);
+            _movementView.LoadContent(content);
             
         }
     }

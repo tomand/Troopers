@@ -113,6 +113,7 @@
     <Compile Include="Model\Info.cs" />
     <Compile Include="Controller\InfoController.cs" />
     <Compile Include="View\AmmoView.cs" />
+    <Compile Include="View\MovementView.cs" />
     <Compile Include="View\TrooperHitView.cs" />
     <Compile Include="View\InfoView.cs" />
     <Compile Include="Model\Building.cs" />

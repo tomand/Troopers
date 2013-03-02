@@ -293,7 +293,7 @@ namespace Troopers.Model
             return new ComputerControlledTrooper(startPosition, faceDirection, width, height, speed, GetAllPositions(), health);
         }
 
-        private List<Vector2> GetAllPositions()
+        public List<Vector2> GetAllPositions()
         {
             List<Vector2> positions = new List<Vector2>();
             for (int i = 0; i < Width; i++)

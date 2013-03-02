@@ -212,5 +212,7 @@ namespace Troopers.Model
         {
             _lastHealth = Health;
         }
+
+        public bool IsMoving { get { return !TargetIsReached(); } }
     }
 }

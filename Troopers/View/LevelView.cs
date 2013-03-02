@@ -63,7 +63,7 @@ namespace Troopers.View
 
             foreach (Trooper trooper in CurrentLevel.GetTroopers())
             {
-                _trooperView.Draw(spriteBatch, gameTime, trooper);
+                _trooperView.Draw(spriteBatch, gameTime, trooper, CurrentLevel.GetAllPositions());
                 if (trooper.LifeChange < 0)
                 {
                     AddTrooperHitView(trooper.CenterPosition, trooper.LifeChange, gameTime);
