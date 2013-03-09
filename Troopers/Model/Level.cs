@@ -93,7 +93,7 @@ namespace Troopers.Model
             
 
             _cursor.DistanceGrade = trooper.GetDistanceGrade(_cursor.Position);
-
+            _cursor.TrooperDistance = trooper.GetSquaredDistance(_cursor.Position);
             if (trooper.HasNoTimeLeft) 
                 UpdateWhoIsCurrent(trooper);
         }
@@ -326,6 +326,11 @@ namespace Troopers.Model
         public IEnumerable<Ammo> GetAmmoClips()
         {
             return _ammoClips.Where(a => !a.IsTaken);
+        }
+
+        internal List<Vector2> GetAllUnblockedPositions()
+        {
+            return GetAllPositions().Where(p => !(IsComputerControlledTrooperOnPosition(p) || IsHouseOnPosition(p))).ToList();
         }
     }
 }

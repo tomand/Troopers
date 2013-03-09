@@ -190,6 +190,10 @@ namespace Troopers.Model
             return Distance.Close;
         }
 
+        public float GetSquaredDistance(Vector2 distanPosition)
+        {
+            return Vector2.DistanceSquared(Position, distanPosition);
+        }
 
         public void Hit(int damage)
         {

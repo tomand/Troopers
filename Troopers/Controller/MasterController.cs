@@ -70,7 +70,7 @@ namespace Troopers.Controller
             _levelController.PauseGame += (sender, args) => ShowPauseMenu();
             _levelController.LevelFinished += (sender, args) => FinishLevel(args);
 
-            _helpController.GoBack += (sender, EventArgs) => GoBackFromHelp();
+            _helpController.GoBack += (sender, eventArgs) => GoBackFromHelp();
 
         }
 
@@ -207,16 +207,16 @@ namespace Troopers.Controller
             if (_levelController.IsActive)
                 _levelController.Update(gameTime);
 
-            if (_mainMenuController.IsActive)
+            else if (_mainMenuController.IsActive)
                 _mainMenuController.Update(gameTime);
 
-            if (_pauseMenuController.IsActive)
+            else if (_pauseMenuController.IsActive)
                 _pauseMenuController.Update(gameTime);
 
-            if (_gameOverMenuController.IsActive)
+            else if (_gameOverMenuController.IsActive)
                 _gameOverMenuController.Update(gameTime);
 
-            if (_helpController.IsActive)
+            else if (_helpController.IsActive)
                 _helpController.Update(gameTime);
 
             base.Update(gameTime);
@@ -236,16 +236,16 @@ namespace Troopers.Controller
             if (_levelController.IsActive)
                 _levelController.Draw(_spriteBatch, gameTime);
 
-            if (_mainMenuController.IsActive)
+            else if (_mainMenuController.IsActive)
                 _mainMenuController.Draw(_spriteBatch, gameTime);
 
-            if (_pauseMenuController.IsActive)
+            else if (_pauseMenuController.IsActive)
                 _pauseMenuController.Draw(_spriteBatch, gameTime);
 
-            if (_gameOverMenuController.IsActive)
+            else if (_gameOverMenuController.IsActive)
                 _gameOverMenuController.Draw(_spriteBatch, gameTime);
 
-            if (_helpController.IsActive)
+            else if (_helpController.IsActive)
                 _helpController.Draw(_spriteBatch, gameTime);
             
             _spriteBatch.End();

@@ -38,6 +38,7 @@ namespace Troopers.Controller
                 OnGoBack();
             
             _oldKeyboardState = keyboardState;
+            _oldMouseState = mouseState;
         }
 
         private void OnGoBack()

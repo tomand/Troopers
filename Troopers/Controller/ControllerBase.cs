@@ -16,7 +16,18 @@ namespace Troopers.Controller
         protected ContentManager _content;
         protected KeyboardState _oldKeyboardState;
         protected MouseState _oldMouseState;
-        public bool IsActive { get; set; }
+        private bool _isActive;
+
+        public bool IsActive
+        {
+            get { return _isActive; }
+            set
+            {
+                if (value)
+                    _oldMouseState = Mouse.GetState();
+                _isActive = value;
+            }
+        }
 
         protected bool IsKeyPressed(KeyboardState keyboardState, Keys key)
         {

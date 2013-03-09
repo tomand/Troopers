@@ -46,10 +46,8 @@ namespace Troopers.View
 
             DrawBuildings(spriteBatch, gameTime);
 
-
-            _cursorView.Draw(spriteBatch, gameTime);
-
-
+            if(!_levelManager.CurrentLevel.GetCurrentTrooper().IsControlledByComputer)
+                _cursorView.Draw(spriteBatch, gameTime);
 
             foreach (var mediKit in CurrentLevel.GetMediKits())
             {
@@ -63,7 +61,7 @@ namespace Troopers.View
 
             foreach (Trooper trooper in CurrentLevel.GetTroopers())
             {
-                _trooperView.Draw(spriteBatch, gameTime, trooper, CurrentLevel.GetAllPositions());
+                _trooperView.Draw(spriteBatch, gameTime, trooper, CurrentLevel.GetAllUnblockedPositions());
                 if (trooper.LifeChange < 0)
                 {
                     AddTrooperHitView(trooper.CenterPosition, trooper.LifeChange, gameTime);

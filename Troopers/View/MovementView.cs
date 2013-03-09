@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Content;
 using Microsoft.Xna.Framework.Graphics;
@@ -11,9 +10,7 @@ namespace Troopers.View
 {
     class MovementView : GameObjectView
     {
-        private Texture2D _tileMark;
         private SpriteFont _font;
-        private List<Vector2> _levelPositions;
 
         public MovementView(Camera cam)
             : base(cam)
@@ -39,13 +36,13 @@ namespace Troopers.View
 
             Rectangle? sourceRectangle = new Rectangle(GetSourceXValue(distanceGrade), 0, GameObjectTexture.Height, GameObjectTexture.Height);
             spriteBatch.Draw(GameObjectTexture, DestinationRectangle, sourceRectangle, Color.White);
-            spriteBatch.DrawString(_font, Math.Ceiling(Math.Sqrt(squaredDistance)).ToString(), new Vector2(DestinationRectangle.X, DestinationRectangle.Y),
-                                   Color.Black);
+          //  spriteBatch.DrawString(_font, Math.Ceiling(Math.Sqrt(squaredDistance)).ToString(), new Vector2(DestinationRectangle.X + 1, DestinationRectangle.Y + 1),
+            //                       Color.Black);
         }
 
         private int GetSourceXValue(Distance distanceGrade)
         {
-           int returnValue = 0;
+           int returnValue;
            switch (distanceGrade)
             {
                 case Distance.Close:

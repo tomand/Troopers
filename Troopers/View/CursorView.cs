@@ -13,6 +13,7 @@ namespace Troopers.View
     {
         private Cursor _cursor;
         private View.Camera cam;
+        private SpriteFont _font;
 
         public CursorView(Camera cam, Cursor cursor)
             : base(cam)
@@ -42,8 +43,10 @@ namespace Troopers.View
 
             Rectangle? sourceRectangle = new Rectangle(GetSourceXValue(), 0, GameObjectTexture.Height, GameObjectTexture.Height);
             spriteBatch.Draw(GameObjectTexture, DestinationRectangle, sourceRectangle, Color.White);
-            
 
+            if(!Cursor.BlockedByBuilding && !Cursor.MarksEnemyTrooper)
+            spriteBatch.DrawString(_font, Math.Ceiling(Math.Sqrt(_cursor.TrooperDistance)).ToString(), new Vector2(DestinationRectangle.X + 1, DestinationRectangle.Y + 1),
+                                  Color.Black);
         }
 
         private int GetSourceXValue()
@@ -78,6 +81,7 @@ namespace Troopers.View
         internal void LoadContent(ContentManager content)
         {
             GameObjectTexture = content.Load<Texture2D>("tilemark");
+            _font = content.Load<SpriteFont>("TrooperInfoFont");
         }
     }
 }

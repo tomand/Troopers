@@ -36,6 +36,8 @@ namespace Troopers.Model
             Position += 1f * (mousePosition - Position);
             Position = new Vector2((float)Math.Floor(MathHelper.Clamp(Position.X, 0f, levelWidth - Side)), (float)Math.Floor(MathHelper.Clamp(Position.Y, 0f, levelHeight - Side)));
         }
+
+        public float TrooperDistance { get; set; }
     }
 
     public enum Distance
